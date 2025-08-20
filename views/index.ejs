@@ -1,0 +1,2125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CKC Astrology Portal - Professional</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            --gold-gradient: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+            --purple-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --text-light: #718096;
+            --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 20px 60px rgba(0, 0, 0, 0.15);
+            --shadow-strong: 0 30px 80px rgba(0, 0, 0, 0.2);
+            --border-radius: 20px;
+            --border-radius-lg: 30px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" style="stop-color:rgba(255,255,255,0.1)"/><stop offset="100%" style="stop-color:rgba(255,255,255,0)"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="300" r="150" fill="url(%23a)"/><circle cx="300" cy="700" r="120" fill="url(%23a)"/><circle cx="700" cy="800" r="80" fill="url(%23a)"/></svg>') no-repeat center center;
+            background-size: cover;
+            pointer-events: none;
+            z-index: -1;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) scale(1);
+            }
+
+            50% {
+                transform: translateY(-20px) scale(1.02);
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Header Section */
+        .header {
+            text-align: center;
+            padding: 60px 0 80px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #fff 0%, #f0f8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .subtitle {
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .header .cosmic-icon {
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Navigation Pills */
+        .nav-pills {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .nav-pill {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-pill:hover,
+        .nav-pill.active {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text-primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        /* Service Cards */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .service-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-lg);
+            padding: 40px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .service-card:hover::before {
+            opacity: 1;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-strong);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .service-card:hover .service-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .service-card:hover .service-title,
+        .service-card:hover .service-description,
+        .service-card:hover .feature-tag {
+            color: var(--text-primary);
+        }
+
+        .service-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gold-gradient);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .service-icon i {
+            font-size: 32px;
+            color: white;
+        }
+
+        .service-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: white;
+            transition: color 0.3s ease;
+        }
+
+        .service-description {
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.7;
+            margin-bottom: 25px;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .feature-tag {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Form Sections */
+        .form-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius-lg);
+            padding: 50px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideInUp 0.6s ease;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            text-align: center;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 15px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .person-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(248, 249, 255, 0.8) 100%);
+            border-radius: var(--border-radius);
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .person-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Enhanced Button */
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 30px auto;
+            min-width: 220px;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #7c8ef5 0%, #8a63c7 100%);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-btn {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 12px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius-lg);
+            padding: 50px;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideInUp 0.6s ease;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .result-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .result-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 40px;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active,
+        .tab-btn:hover {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Info Cards */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(248, 249, 255, 0.8) 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-soft);
+            border-color: rgba(102, 126, 234, 0.2);
+        }
+
+        .info-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        /* Vedic Chart Enhanced */
+        .chart-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(248, 249, 255, 0.8) 100%);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            text-align: center;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .chart-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 25px;
+        }
+
+        .vedic-chart {
+            width: 400px;
+            height: 400px;
+            margin: 20px auto;
+            position: relative;
+            border: 3px solid #667eea;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .chart-house {
+            position: absolute;
+            border: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            font-size: 10px;
+            font-weight: 500;
+            line-height: 1.2;
+            text-align: center;
+            padding: 4px 3px;
+            background: rgba(255, 255, 255, 0.95);
+            word-wrap: break-word;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .chart-house:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        /* Chart house positions */
+        .chart-house.house-1 {
+            width: 50%;
+            height: 50%;
+            top: 25%;
+            left: 25%;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #667eea;
+            font-weight: 600;
+            color: #667eea;
+            font-size: 12px;
+        }
+
+        .chart-house.house-2 {
+            width: 25%;
+            height: 25%;
+            top: 0;
+            left: 25%;
+        }
+
+        .chart-house.house-3 {
+            width: 25%;
+            height: 25%;
+            top: 0;
+            left: 0;
+        }
+
+        .chart-house.house-4 {
+            width: 25%;
+            height: 25%;
+            top: 25%;
+            left: 0;
+        }
+
+        .chart-house.house-5 {
+            width: 25%;
+            height: 25%;
+            top: 50%;
+            left: 0;
+        }
+
+        .chart-house.house-6 {
+            width: 25%;
+            height: 25%;
+            top: 75%;
+            left: 0;
+        }
+
+        .chart-house.house-7 {
+            width: 25%;
+            height: 25%;
+            top: 75%;
+            left: 25%;
+        }
+
+        .chart-house.house-8 {
+            width: 25%;
+            height: 25%;
+            top: 75%;
+            left: 50%;
+        }
+
+        .chart-house.house-9 {
+            width: 25%;
+            height: 25%;
+            top: 75%;
+            left: 75%;
+        }
+
+        .chart-house.house-10 {
+            width: 25%;
+            height: 25%;
+            top: 50%;
+            left: 75%;
+        }
+
+        .chart-house.house-11 {
+            width: 25%;
+            height: 25%;
+            top: 25%;
+            left: 75%;
+        }
+
+        .chart-house.house-12 {
+            width: 25%;
+            height: 25%;
+            top: 0;
+            left: 50%;
+        }
+
+        .house-number {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            font-size: 8px;
+            color: #667eea;
+            font-weight: 600;
+            background: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #667eea;
+        }
+
+        .planet-list {
+            font-size: 9px;
+            color: #333;
+            font-weight: 600;
+            margin-top: 14px;
+            line-height: 1.3;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .planet-item {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+            margin: 1px 0;
+            font-size: 8px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .sign-name {
+            font-size: 7px;
+            color: #666;
+            margin-top: 3px;
+            font-weight: 400;
+        }
+
+        /* Compatibility Score */
+        .compatibility-score {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #667eea 0deg, #764ba2 180deg, #f0f2ff 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            position: relative;
+            animation: rotateScore 3s ease-in-out;
+        }
+
+        @keyframes rotateScore {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .score-inner {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Porutham Cards */
+        .porutham-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .porutham-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(248, 249, 255, 0.8) 100%);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .porutham-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .porutham-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .porutham-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .porutham-status {
+            padding: 6px 16px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .porutham-status.compatible {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+        }
+
+        .porutham-status.incompatible {
+            background: linear-gradient(135deg, #f8d7da 0%, #f1b0b7 100%);
+            color: #721c24;
+        }
+
+        .porutham-status.neutral {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            color: #856404;
+        }
+
+        /* Error Message */
+        .error-message {
+            background: linear-gradient(135deg, #f8d7da 0%, #f1b0b7 100%);
+            color: #721c24;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 25px 0;
+            border: 1px solid #f5c6cb;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        /* Chart Legend */
+        .chart-legend {
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .legend-item {
+            display: inline-block;
+            margin: 5px 12px;
+            padding: 4px 8px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+        }
+
+        .planet-abbr {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                padding: 40px 0 60px;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .form-section,
+            .results-section {
+                padding: 30px 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .vedic-chart {
+                width: 320px;
+                height: 320px;
+            }
+
+            .nav-pills {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease;
+        }
+
+        .slide-up {
+            animation: slideInUp 0.6s ease;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-gradient);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <div class="cosmic-icon">
+                <i class="fas fa-star-and-crescent"></i>
+            </div>
+            <h1>CKC Astrology Portal</h1>
+            <p class="subtitle">Discover Your Cosmic Journey Through Professional Astrological Analysis</p>
+        </div>
+
+        <!-- Navigation Pills -->
+        <div class="nav-pills">
+            <div class="nav-pill active" data-section="services">
+                <i class="fas fa-home"></i> Services
+            </div>
+            <div class="nav-pill" data-section="birth-chart">
+                <i class="fas fa-chart-pie"></i> Birth Chart
+            </div>
+            <div class="nav-pill" data-section="compatibility">
+                <i class="fas fa-heart"></i> Compatibility
+            </div>
+            <div class="nav-pill" data-section="behavior">
+                <i class="fas fa-brain"></i> Behavior
+            </div>
+        </div>
+
+        <!-- Services Grid -->
+        <div id="services-section" class="services-grid">
+            <div class="service-card" data-service="astrology">
+                <div class="service-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <h3 class="service-title">Birth Chart Analysis</h3>
+                <p class="service-description">Unlock the secrets of your cosmic blueprint with comprehensive birth
+                    chart analysis including Rashi, Nakshatra, and planetary positions that shape your destiny.</p>
+                <div class="features">
+                    <span class="feature-tag">Birth Chart</span>
+                    <span class="feature-tag">Navamsa Chart</span>
+                    <span class="feature-tag">Planetary Positions</span>
+                    <span class="feature-tag">Lagna Analysis</span>
+                </div>
+            </div>
+
+            <div class="service-card" data-service="compatibility">
+                <div class="service-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3 class="service-title">Marriage Compatibility</h3>
+                <p class="service-description">Discover the harmony between souls through traditional Porutham analysis.
+                    Compare birth charts to understand marital compatibility and receive divine guidance.</p>
+                <div class="features">
+                    <span class="feature-tag">10 Poruthams</span>
+                    <span class="feature-tag">Compatibility Score</span>
+                    <span class="feature-tag">Detailed Analysis</span>
+                    <span class="feature-tag">Remedies</span>
+                </div>
+            </div>
+
+            <div class="service-card" data-service="behavior">
+                <div class="service-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="service-title">Behavior Prediction</h3>
+                <p class="service-description">Understand your inner nature and behavioral patterns through cosmic
+                    influences. Discover personality traits and life tendencies written in the stars.</p>
+                <div class="features">
+                    <span class="feature-tag">Personality Traits</span>
+                    <span class="feature-tag">Career Insights</span>
+                    <span class="feature-tag">Relationship Style</span>
+                    <span class="feature-tag">Life Patterns</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Birth Chart Analysis Form -->
+        <div id="birth-chart-section" class="form-section">
+            <button class="back-btn" onclick="showSection('services')">
+                <i class="fas fa-arrow-left"></i> Back to Services
+            </button>
+            <h2 class="form-title">
+                <i class="fas fa-chart-pie"></i> Birth Chart Analysis
+            </h2>
+            <form id="birth-chart-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="year"><i class="fas fa-calendar-alt"></i> Year</label>
+                        <input type="number" id="year" name="year" required min="1900" max="2100" placeholder="1990">
+                    </div>
+                    <div class="form-group">
+                        <label for="month"><i class="fas fa-calendar"></i> Month</label>
+                        <select id="month" name="month" required>
+                            <option value="">Select Month</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="day"><i class="fas fa-calendar-day"></i> Day</label>
+                        <input type="number" id="day" name="day" required min="1" max="31" placeholder="15">
+                    </div>
+                    <div class="form-group">
+                        <label for="hour"><i class="fas fa-clock"></i> Hour (24-hour)</label>
+                        <input type="number" id="hour" name="hour" required min="0" max="23" placeholder="14">
+                    </div>
+                    <div class="form-group">
+                        <label for="minute"><i class="fas fa-clock"></i> Minute</label>
+                        <input type="number" id="minute" name="minute" required min="0" max="59" placeholder="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="timezone"><i class="fas fa-globe"></i> Timezone (UTC offset)</label>
+                        <input type="number" id="timezone" name="timezone" required step="0.5" min="-12" max="14"
+                            placeholder="5.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="latitude"><i class="fas fa-map-marker-alt"></i> Latitude</label>
+                        <input type="number" id="latitude" name="latitude" required step="any" placeholder="13.0827">
+                    </div>
+                    <div class="form-group">
+                        <label for="longitude"><i class="fas fa-map-marker-alt"></i> Longitude</label>
+                        <input type="number" id="longitude" name="longitude" required step="any" placeholder="80.2707">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <span class="btn-text">Analyze Birth Chart</span>
+                    <div class="loading-spinner"></div>
+                    <i class="fas fa-magic"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Compatibility Analysis Form -->
+        <div id="compatibility-section" class="form-section">
+            <button class="back-btn" onclick="showSection('services')">
+                <i class="fas fa-arrow-left"></i> Back to Services
+            </button>
+            <h2 class="form-title">
+                <i class="fas fa-heart"></i> Marriage Compatibility Analysis
+            </h2>
+            <form id="compatibility-form">
+                <div class="person-section">
+                    <h3 class="person-title">
+                        <i class="fas fa-user"></i> Person 1 Details
+                    </h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="person1-name"><i class="fas fa-user"></i> Name</label>
+                            <input type="text" id="person1-name" name="person1-name" required
+                                placeholder="Enter full name">
+                        </div>
+                        <div class="form-group">
+                            <label for="person1-gender"><i class="fas fa-venus-mars"></i> Gender</label>
+                            <select id="person1-gender" name="person1-gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="person1-date"><i class="fas fa-calendar-alt"></i> Birth Date</label>
+                            <input type="date" id="person1-date" name="person1-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="person1-time"><i class="fas fa-clock"></i> Birth Time</label>
+                            <input type="time" id="person1-time" name="person1-time" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="person1-lat"><i class="fas fa-map-marker-alt"></i> Latitude</label>
+                            <input type="number" id="person1-lat" name="person1-lat" step="any" placeholder="13.0827">
+                        </div>
+                        <div class="form-group">
+                            <label for="person1-lng"><i class="fas fa-map-marker-alt"></i> Longitude</label>
+                            <input type="number" id="person1-lng" name="person1-lng" step="any" placeholder="80.2707">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="person-section">
+                    <h3 class="person-title">
+                        <i class="fas fa-user"></i> Person 2 Details
+                    </h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="person2-name"><i class="fas fa-user"></i> Name</label>
+                            <input type="text" id="person2-name" name="person2-name" required
+                                placeholder="Enter full name">
+                        </div>
+                        <div class="form-group">
+                            <label for="person2-gender"><i class="fas fa-venus-mars"></i> Gender</label>
+                            <select id="person2-gender" name="person2-gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="person2-date"><i class="fas fa-calendar-alt"></i> Birth Date</label>
+                            <input type="date" id="person2-date" name="person2-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="person2-time"><i class="fas fa-clock"></i> Birth Time</label>
+                            <input type="time" id="person2-time" name="person2-time" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="person2-lat"><i class="fas fa-map-marker-alt"></i> Latitude</label>
+                            <input type="number" id="person2-lat" name="person2-lat" step="any" placeholder="13.0827">
+                        </div>
+                        <div class="form-group">
+                            <label for="person2-lng"><i class="fas fa-map-marker-alt"></i> Longitude</label>
+                            <input type="number" id="person2-lng" name="person2-lng" step="any" placeholder="80.2707">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <span class="btn-text">Analyze Compatibility</span>
+                    <div class="loading-spinner"></div>
+                    <i class="fas fa-heart"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Behavior Prediction Form -->
+        <div id="behavior-section" class="form-section">
+            <button class="back-btn" onclick="showSection('services')">
+                <i class="fas fa-arrow-left"></i> Back to Services
+            </button>
+            <h2 class="form-title">
+                <i class="fas fa-brain"></i> Behavior Prediction Analysis
+            </h2>
+            <form id="behavior-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="behavior-year"><i class="fas fa-calendar-alt"></i> Year</label>
+                        <input type="number" id="behavior-year" name="year" required min="1900" max="2100"
+                            placeholder="1990">
+                    </div>
+                    <div class="form-group">
+                        <label for="behavior-month"><i class="fas fa-calendar"></i> Month</label>
+                        <select id="behavior-month" name="month" required>
+                            <option value="">Select Month</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="behavior-day"><i class="fas fa-calendar-day"></i> Day</label>
+                        <input type="number" id="behavior-day" name="day" required min="1" max="31" placeholder="15">
+                    </div>
+                    <div class="form-group">
+                        <label for="behavior-hour"><i class="fas fa-clock"></i> Hour (24-hour)</label>
+                        <input type="number" id="behavior-hour" name="hour" required min="0" max="23" placeholder="14">
+                    </div>
+                    <div class="form-group">
+                        <label for="behavior-minute"><i class="fas fa-clock"></i> Minute</label>
+                        <input type="number" id="behavior-minute" name="minute" required min="0" max="59"
+                            placeholder="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="behavior-timezone"><i class="fas fa-globe"></i> Timezone (UTC offset)</label>
+                        <input type="number" id="behavior-timezone" name="timezone" required step="0.5" min="-12"
+                            max="14" placeholder="5.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="behavior-latitude"><i class="fas fa-map-marker-alt"></i> Latitude</label>
+                        <input type="number" id="behavior-latitude" name="latitude" required step="any"
+                            placeholder="13.0827">
+                    </div>
+                    <div class="form-group">
+                        <label for="behavior-longitude"><i class="fas fa-map-marker-alt"></i> Longitude</label>
+                        <input type="number" id="behavior-longitude" name="longitude" required step="any"
+                            placeholder="80.2707">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <span class="btn-text">Predict Behavior</span>
+                    <div class="loading-spinner"></div>
+                    <i class="fas fa-brain"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="results-section">
+            <button class="back-btn" onclick="showSection('services')">
+                <i class="fas fa-arrow-left"></i> Back to Services
+            </button>
+            <div class="result-header">
+                <h2 class="result-title" id="result-title">Analysis Results</h2>
+            </div>
+
+            <div class="result-tabs" id="result-tabs">
+                <!-- Tabs will be dynamically generated -->
+            </div>
+
+            <div id="result-content">
+                <!-- Content will be dynamically generated -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentSection = 'services';
+        let currentResults = null;
+
+        // Planet abbreviations for charts
+        const planetAbbreviations = {
+            'Sun': 'Su', 'Moon': 'Mo', 'Mars': 'Ma', 'Mercury': 'Me',
+            'Jupiter': 'Ju', 'Venus': 'Ve', 'Saturn': 'Sa', 'Rahu': 'Ra',
+            'Ketu': 'Ke', 'Uranus': 'Ur', 'Neptune': 'Ne', 'Pluto': 'Pl', 'Lagna': 'Lg'
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function () {
+            setupEventListeners();
+            showSection('services');
+        });
+
+        function setupEventListeners() {
+            // Navigation pills
+            document.querySelectorAll('.nav-pill').forEach(pill => {
+                pill.addEventListener('click', function () {
+                    const section = this.dataset.section;
+                    showSection(section);
+                });
+            });
+
+            // Service cards
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.addEventListener('click', function () {
+                    const service = this.dataset.service;
+                    showSection(service === 'astrology' ? 'birth-chart' : service);
+                });
+            });
+
+            // Form submissions
+            document.getElementById('birth-chart-form').addEventListener('submit', handleBirthChartSubmit);
+            document.getElementById('compatibility-form').addEventListener('submit', handleCompatibilitySubmit);
+            document.getElementById('behavior-form').addEventListener('submit', handleBehaviorSubmit);
+        }
+
+        function showSection(sectionName) {
+            currentSection = sectionName;
+
+            // Hide all sections
+            document.querySelectorAll('.services-grid, .form-section, .results-section').forEach(el => {
+                el.classList.remove('active');
+                el.style.display = 'none';
+            });
+
+            // Update navigation pills
+            document.querySelectorAll('.nav-pill').forEach(pill => {
+                pill.classList.remove('active');
+                if (pill.dataset.section === sectionName) {
+                    pill.classList.add('active');
+                }
+            });
+
+            // Show selected section
+            if (sectionName === 'services') {
+                document.querySelector('.services-grid').style.display = 'grid';
+            } else if (sectionName === 'results') {
+                document.getElementById('results-section').classList.add('active');
+                document.getElementById('results-section').style.display = 'block';
+            } else {
+                const section = document.getElementById(`${sectionName}-section`);
+                if (section) {
+                    section.classList.add('active');
+                    section.style.display = 'block';
+                }
+            }
+        }
+
+        async function handleBirthChartSubmit(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData);
+
+            // Convert numeric fields
+            ['year', 'month', 'day', 'hour', 'minute', 'timezone', 'latitude', 'longitude'].forEach(field => {
+                data[field] = parseFloat(data[field]);
+            });
+
+            try {
+                setLoadingState(true, 'birth-chart');
+                const response = await fetch('/api/astrology/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    displayBirthChartResults(result.data);
+                } else {
+                    showError(result.errors || ['An error occurred'], 'birth-chart');
+                }
+            } catch (error) {
+                showError(['Network error: ' + error.message], 'birth-chart');
+            } finally {
+                setLoadingState(false, 'birth-chart');
+            }
+        }
+
+        async function handleCompatibilitySubmit(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = {
+                person1: {
+                    name: formData.get('person1-name'),
+                    gender: formData.get('person1-gender'),
+                    birthDate: formData.get('person1-date'),
+                    birthTime: formData.get('person1-time'),
+                    latitude: parseFloat(formData.get('person1-lat')) || 13.0827,
+                    longitude: parseFloat(formData.get('person1-lng')) || 80.2707
+                },
+                person2: {
+                    name: formData.get('person2-name'),
+                    gender: formData.get('person2-gender'),
+                    birthDate: formData.get('person2-date'),
+                    birthTime: formData.get('person2-time'),
+                    latitude: parseFloat(formData.get('person2-lat')) || 13.0827,
+                    longitude: parseFloat(formData.get('person2-lng')) || 80.2707
+                }
+            };
+
+            try {
+                setLoadingState(true, 'compatibility');
+                const response = await fetch('/api/compare-jadhagam-porutham', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    displayCompatibilityResults(result.data);
+                } else {
+                    showError([result.message || 'An error occurred'], 'compatibility');
+                }
+            } catch (error) {
+                showError(['Network error: ' + error.message], 'compatibility');
+            } finally {
+                setLoadingState(false, 'compatibility');
+            }
+        }
+
+        async function handleBehaviorSubmit(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData);
+
+            // Convert numeric fields
+            ['year', 'month', 'day', 'hour', 'minute', 'timezone', 'latitude', 'longitude'].forEach(field => {
+                data[field] = parseFloat(data[field]);
+            });
+
+            try {
+                setLoadingState(true, 'behavior');
+                const response = await fetch('/api/behavior', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    displayBehaviorResults(result);
+                } else {
+                    showError([result.error || 'An error occurred'], 'behavior');
+                }
+            } catch (error) {
+                showError(['Network error: ' + error.message], 'behavior');
+            } finally {
+                setLoadingState(false, 'behavior');
+            }
+        }
+
+        function displayBirthChartResults(data) {
+            const tabs = [
+                { id: 'overview', name: 'Overview', icon: 'fas fa-chart-line' },
+                { id: 'birth-chart', name: 'Birth Chart', icon: 'fas fa-chart-pie' },
+                { id: 'navamsa-chart', name: 'Navamsa Chart', icon: 'fas fa-chart-area' },
+                { id: 'planetary', name: 'Planetary Positions', icon: 'fas fa-globe' }
+            ];
+
+            showResultsContainer('Birth Chart Analysis Results', tabs);
+
+            // Overview tab content
+            const overviewContent = `
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-title"><i class="fas fa-moon"></i> Rashi (Moon Sign)</div>
+                        <div class="info-value">${data.rasi.name} (${data.rasi.english})</div>
+                        <div style="font-size: 0.9rem; color: #666; margin-top: 8px;">
+                            <strong>Lord:</strong> ${data.rasi.lord}<br>
+                            <strong>Element:</strong> ${data.rasi.element}
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-title"><i class="fas fa-star"></i> Nakshatra</div>
+                        <div class="info-value">${data.nakshatra.name}</div>
+                        <div style="font-size: 0.9rem; color: #666; margin-top: 8px;">
+                            <strong>Lord:</strong> ${data.nakshatra.lord}<br>
+                            <strong>Pada:</strong> ${data.nakshatra.pada}
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-title"><i class="fas fa-arrow-up"></i> Lagna (Ascendant)</div>
+                        <div class="info-value">${data.lagna.name} (${data.lagna.english})</div>
+                        <div style="font-size: 0.9rem; color: #666; margin-top: 8px;">
+                            <strong>Lord:</strong> ${data.lagna.lord}<br>
+                            <strong>Element:</strong> ${data.lagna.element}
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-title"><i class="fas fa-compass"></i> Ayanamsa</div>
+                        <div class="info-value">${data.planetaryPositions.ayanamsa}°</div>
+                        <div style="font-size: 0.9rem; color: #666; margin-top: 8px;">
+                            Astronomical calculation reference
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Birth Chart tab content
+            const birthChartContent = `
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-chart-pie"></i> Birth Chart (Rashi Chart)</div>
+                    ${generateVedicChart(data.birthChart, 'Birth Chart')}
+                </div>
+            `;
+
+            // Navamsa Chart tab content
+            const navamsaChartContent = `
+                <div class="chart-card">
+                    <div class="chart-title"><i class="fas fa-chart-area"></i> Navamsa Chart (D9)</div>
+                    ${generateVedicChart(data.navamsaChart, 'Navamsa Chart')}
+                </div>
+            `;
+
+            // Planetary positions content
+            const planetaryContent = `
+                <div class="info-grid">
+                    ${Object.entries(data.planetaryPositions.rawPositions).map(([planet, position]) => `
+                        <div class="info-card">
+                            <div class="info-title"><i class="fas fa-globe"></i> ${planet}</div>
+                            <div class="info-value">${position}°</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            // Set tab contents
+            setTabContent('overview', overviewContent);
+            setTabContent('birth-chart', birthChartContent);
+            setTabContent('navamsa-chart', navamsaChartContent);
+            setTabContent('planetary', planetaryContent);
+
+            currentResults = data;
+            showSection('results');
+        }
+
+        function displayCompatibilityResults(data) {
+            const tabs = [
+                { id: 'compatibility', name: 'Compatibility Score', icon: 'fas fa-heart' },
+                { id: 'poruthams', name: 'Poruthams', icon: 'fas fa-list-check' },
+                { id: 'analysis', name: 'Analysis', icon: 'fas fa-chart-line' }
+            ];
+
+            showResultsContainer('Marriage Compatibility Results', tabs);
+
+            // Compatibility Score content
+            const compatibilityContent = `
+                <div class="compatibility-score">
+                    <div class="score-circle">
+                        <div class="score-inner">${data.compatibility.overallPercentage}%</div>
+                    </div>
+                    <h3 style="color: #667eea; font-family: 'Playfair Display', serif; margin-bottom: 10px;">
+                        ${data.compatibility.overallGrade} Match
+                    </h3>
+                    <p style="color: #666; font-size: 1.1rem;">${data.compatibility.recommendationStatus}</p>
+                </div>
+               <div class="info-grid">
+    <div class="info-card">
+        <div class="info-title"><i class="fas fa-star"></i> Total Score</div>
+        <div class="info-value">${data.compatibility.totalScore} / ${data.compatibility.maxPossibleScore}</div>
+    </div>
+    ${Object.entries(data.categoryCompatibility || {}).map(([categoryKey, categoryData]) => `
+        <div class="info-card">
+            <div class="info-title"><i class="fas fa-chart-bar"></i> ${categoryData.name}</div>
+            <div class="info-value">${categoryData.percentage}%</div>
+        </div>
+    `).join('')}
+</div>`;
+
+            // Before rendering
+            const poruthamsWithCompatible = Object.entries(data.poruthams).map(([name, porutham]) => {
+                return [
+                    name,
+                    {
+                        ...porutham,
+                        compatible: porutham.status === "Excellent" || porutham.status === "Average" // true if favorable
+                    }
+                ];
+            });
+
+            const poruthamsContent = `
+  <div class="porutham-grid">
+    ${poruthamsWithCompatible.map(([name, porutham]) => `
+      <div class="porutham-card">
+        <div class="porutham-header">
+          <div class="porutham-name">${porutham.name}</div>
+          <div class="porutham-status ${porutham.compatible ? 'compatible' : 'incompatible'}">
+            <i class="fas fa-${porutham.compatible ? 'check' : 'times'}"></i>
+            ${porutham.compatible ? 'Compatible' : 'Not Compatible'}
+          </div>
+        </div>
+        <div style="font-size: 0.9rem; color: #666; margin-top: 12px;">
+          <i class="fas fa-star"></i> Score: ${porutham.score} / ${porutham.maxScore}
+        </div>
+        <div style="font-size: 0.95rem; color: #333; margin-top: 8px; line-height: 1.5;">
+          ${porutham.description}
+        </div>
+      </div>
+    `).join('')}
+  </div>
+`;
+
+            // Build analysis content dynamically
+            const overall = data.analysis.overallAssessment;
+            const marriage = data.analysis.marriageRecommendation;
+            const strengths = data.analysis.strengths;
+            const weaknesses = data.analysis.weaknesses;
+            const remedies = data.analysis.remedialMeasures;
+            const insights = data.analysis.compatibilityInsights;
+
+            const analysisContent = `
+    <div class="info-card" style="margin-bottom: 25px;">
+        <div class="info-title"><i class="fas fa-chart-line"></i> Overall Assessment</div>
+        <div class="info-value" style="line-height: 1.7;">
+            <strong>Rating:</strong> ${overall.rating} (${overall.tamilRating})<br>
+            <strong>Recommendation:</strong> ${overall.recommendation} (${overall.tamilRecommendation})<br>
+            <strong>Description:</strong> ${overall.description}
+        </div>
+    </div>
+
+    <div class="info-card" style="margin-bottom: 25px;">
+        <div class="info-title"><i class="fas fa-ring"></i> Marriage Recommendation</div>
+        <div class="info-value" style="line-height: 1.7;">
+            <strong>Recommendation:</strong> ${marriage.recommendation} (${marriage.tamilRecommendation})<br>
+            <strong>Reason:</strong> ${marriage.reason} (${marriage.tamilReason})<br>
+            <strong>Action:</strong> ${marriage.action}
+        </div>
+    </div>
+
+    <div class="info-card" style="margin-bottom: 25px;">
+        <div class="info-title"><i class="fas fa-check-circle"></i> Strengths</div>
+        <div class="info-value">
+            <ul>
+                ${strengths.map(s => `
+                    <li>
+                        <strong>${s.name} (${s.tamilName})</strong> - 
+                        Score: ${s.score}, ${s.percentage}% <br>
+                        ${s.description}
+                    </li>
+                `).join('')}
+            </ul>
+        </div>
+    </div>
+
+    <div class="info-card" style="margin-bottom: 25px;">
+        <div class="info-title"><i class="fas fa-times-circle"></i> Weaknesses</div>
+        <div class="info-value">
+            <ul>
+                ${weaknesses.map(w => `
+                    <li>
+                        <strong>${w.name} (${w.tamilName})</strong> - 
+                        Score: ${w.score}, ${w.percentage}% <br>
+                        ${w.description}
+                    </li>
+                `).join('')}
+            </ul>
+        </div>
+    </div>
+
+    <div class="info-card" style="margin-bottom: 25px;">
+        <div class="info-title"><i class="fas fa-leaf"></i> Remedies</div>
+        <div class="info-value">
+            ${remedies.map(r => `
+                <strong>${r.dosha} (${r.tamilName})</strong> - Severity: ${r.severity}<br>
+                <u>Remedies:</u>
+                <ul>${r.remedies.map(rem => `<li>${rem}</li>`).join('')}</ul>
+                <u>தமிழ் பரிகாரங்கள்:</u>
+                <ul>${r.tamilRemedies.map(tr => `<li>${tr}</li>`).join('')}</ul>
+            `).join('')}
+        </div>
+    </div>
+
+    <div class="info-card">
+        <div class="info-title"><i class="fas fa-lightbulb"></i> Compatibility Insights</div>
+        <div class="info-value">
+            <ul>
+                ${insights.map(i => `
+                    <li>
+                        <strong>${i.category} (${i.tamilCategory})</strong> - 
+                        Score: ${i.score}<br>
+                        ${i.description} (${i.tamilDescription})
+                    </li>
+                `).join('')}
+            </ul>
+        </div>
+    </div>
+`;
+
+
+            // Set tab contents
+            setTabContent('compatibility', compatibilityContent);
+            setTabContent('poruthams', poruthamsContent);
+            setTabContent('analysis', analysisContent);
+
+            currentResults = data;
+            showSection('results');
+        }
+
+        function displayBehaviorResults(data) {
+            const tabs = [
+                { id: 'personality', name: 'Personality', icon: 'fas fa-user' },
+                { id: 'behavior', name: 'Behavior', icon: 'fas fa-brain' },
+                { id: 'predictions', name: 'Predictions', icon: 'fas fa-crystal-ball' }
+            ];
+
+            showResultsContainer('Behavior Prediction Results', tabs);
+
+            // Helper: render nested object/array into HTML
+            function renderObject(obj) {
+                if (typeof obj !== 'object' || obj === null) {
+                    return obj; // primitive
+                }
+
+                if (Array.isArray(obj)) {
+                    return obj.map(v => `<li>${renderObject(v)}</li>`).join('');
+                }
+
+                return `
+        <ul>
+            ${Object.entries(obj).map(([k, v]) => `
+                <li>
+                    <strong>${k.replace(/([A-Z])/g, ' $1').trim()}:</strong> 
+                    ${typeof v === 'object' ? renderObject(v) : v}
+                </li>
+            `).join('')}
+        </ul>
+    `;
+            }
+
+            // Extract behavior data
+            const behaviorData = data.data || data;
+
+            // Personality content
+            const personalityContent = `
+    <div class="info-grid">
+        ${Object.entries(behaviorData.personality || {}).map(([trait, value]) => `
+            <div class="info-card">
+                <div class="info-title"><i class="fas fa-user-circle"></i> ${trait.replace(/([A-Z])/g, ' $1').trim()}</div>
+                <div class="info-value">${renderObject(value)}</div>
+            </div>
+        `).join('')}
+    </div>
+`;
+
+            // Behavior content
+            const behaviorContent = `
+    <div class="info-grid">
+        ${Object.entries(behaviorData.behavioral || {}).map(([aspect, value]) => `
+            <div class="info-card">
+                <div class="info-title"><i class="fas fa-brain"></i> ${aspect.replace(/([A-Z])/g, ' $1').trim()}</div>
+                <div class="info-value">${renderObject(value)}</div>
+            </div>
+        `).join('')}
+    </div>
+`;
+
+            // Predictions content (future in your JSON)
+            const predictionsContent = `
+    <div class="info-grid">
+        ${Object.entries(behaviorData.future || {}).map(([category, prediction]) => `
+            <div class="info-card">
+                <div class="info-title"><i class="fas fa-crystal-ball"></i> ${category.replace(/([A-Z])/g, ' $1').trim()}</div>
+                <div class="info-value" style="line-height: 1.6;">${renderObject(prediction)}</div>
+            </div>
+        `).join('')}
+    </div>
+`;
+
+            // Set tab contents
+            setTabContent('personality', personalityContent);
+            setTabContent('behavior', behaviorContent);
+            setTabContent('predictions', predictionsContent);
+            currentResults = data;
+            showSection('results');
+        }
+
+        function generateVedicChart(chartData, chartType) {
+            if (!chartData || typeof chartData !== 'object') {
+                return '<p style="text-align: center; color: #666; padding: 40px;">Chart data not available</p>';
+            }
+
+            let houses;
+
+            // Handle different data structures for birth chart and navamsa chart
+            if (chartData.houses) {
+                // For the new data structure with detailed house information
+                houses = Array(12).fill(null).map(() => ({ planets: [], sign: '' }));
+
+                Object.entries(chartData.houses).forEach(([houseNum, houseData]) => {
+                    const index = parseInt(houseNum) - 1;
+                    if (index >= 0 && index < 12) {
+                        houses[index] = {
+                            planets: houseData.planets || [],
+                            sign: houseData.sign || houseData.signTamil || ''
+                        };
+                    }
+                });
+            } else {
+                // For the old simple structure (fallback)
+                houses = Array(12).fill(null).map(() => ({ planets: [], sign: '' }));
+
+                Object.entries(chartData).forEach(([house, planets]) => {
+                    const houseNum = parseInt(house);
+                    if (houseNum >= 1 && houseNum <= 12) {
+                        if (Array.isArray(planets)) {
+                            houses[houseNum - 1].planets = planets;
+                        } else if (planets && typeof planets === 'string') {
+                            houses[houseNum - 1].planets = planets.split(',').map(p => p.trim());
+                        } else if (planets) {
+                            houses[houseNum - 1].planets = [planets.toString()];
+                        }
+                    }
+                });
+            }
+
+            // Convert planet names to abbreviations and create planet items
+            const createPlanetItems = (planetList) => {
+                if (!planetList || planetList.length === 0) return '';
+
+                return planetList.map(planet => {
+                    const cleanPlanet = planet.trim();
+                    const abbr = planetAbbreviations[cleanPlanet] || cleanPlanet.substring(0, 2);
+                    return `<div class="planet-item">${abbr}</div>`;
+                }).join('');
+            };
+
+            const chartHtml = `
+                <div class="vedic-chart">
+                    ${Array.from({ length: 12 }, (_, i) => {
+                const houseNum = i + 1;
+                return `
+                            <div class="chart-house house-${houseNum}" title="House ${houseNum}: ${houses[i].sign}">
+                                <div class="house-number">${houseNum}</div>
+                                <div class="planet-list">${createPlanetItems(houses[i].planets)}</div>
+                                <div class="sign-name">${houses[i].sign}</div>
+                            </div>
+                        `;
+            }).join('')}
+                </div>
+                <div class="chart-legend">
+                    <div style="margin-bottom: 15px; font-weight: 600; color: #667eea; text-align: center;">
+                        <i class="fas fa-info-circle"></i> Planet Abbreviations
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;">
+                        ${Object.entries(planetAbbreviations).map(([planet, abbr]) =>
+                `<span class="legend-item"><span class="planet-abbr">${abbr}</span> = ${planet}</span>`
+            ).join('')}
+                    </div>
+                </div>
+            `;
+
+            return chartHtml;
+        }
+
+        function showResultsContainer(title, tabs) {
+            // Show results container
+            document.getElementById('result-title').textContent = title;
+
+            // Generate tabs
+            const tabsContainer = document.getElementById('result-tabs');
+            tabsContainer.innerHTML = tabs.map((tab, index) => `
+                <button class="tab-btn ${index === 0 ? 'active' : ''}" data-tab="${tab.id}">
+                    <i class="${tab.icon}"></i> ${tab.name}
+                </button>
+            `).join('');
+
+            // Generate tab content containers
+            const contentContainer = document.getElementById('result-content');
+            contentContainer.innerHTML = tabs.map((tab, index) => `
+                <div id="tab-${tab.id}" class="tab-content ${index === 0 ? 'active' : ''}">
+                    <!-- Content will be set by specific display functions -->
+                </div>
+            `).join('');
+
+            // Add tab click listeners
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const tabId = this.dataset.tab;
+                    showTab(tabId);
+                });
+            });
+        }
+
+        function showTab(tabId) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.tab === tabId) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+        }
+
+        function setTabContent(tabId, content) {
+            const tabElement = document.getElementById(`tab-${tabId}`);
+            if (tabElement) {
+                tabElement.innerHTML = content;
+            }
+        }
+
+        function setLoadingState(loading, formType) {
+            const form = document.getElementById(`${formType}-form`) || document.querySelector(`#${formType}-section form`);
+            if (!form) return;
+
+            const button = form.querySelector('.btn-primary');
+            const spinner = button.querySelector('.loading-spinner');
+            const text = button.querySelector('.btn-text');
+
+            if (loading) {
+                button.disabled = true;
+                spinner.style.display = 'inline-block';
+                text.textContent = 'Processing...';
+                button.style.background = 'linear-gradient(135deg, #9ca3f0 0%, #a478d1 100%)';
+            } else {
+                button.disabled = false;
+                spinner.style.display = 'none';
+                button.style.background = 'var(--primary-gradient)';
+
+                // Reset button text based on form type
+                const originalTexts = {
+                    'birth-chart': 'Analyze Birth Chart',
+                    'compatibility': 'Analyze Compatibility',
+                    'behavior': 'Predict Behavior'
+                };
+                text.textContent = originalTexts[formType] || 'Submit';
+            }
+        }
+
+        function showError(errors, formType) {
+            const errorHtml = `
+                <div class="error-message">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Error Occurred</h4>
+                    <ul style="margin-top: 15px; padding-left: 20px;">
+                        ${errors.map(error => `<li style="margin-bottom: 5px;">${error}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+
+            // Show error in the current active form
+            const activeForm = document.getElementById(`${formType}-section`);
+            if (activeForm) {
+                // Remove existing errors
+                const existingError = activeForm.querySelector('.error-message');
+                if (existingError) {
+                    existingError.remove();
+                }
+
+                // Add new error after the form
+                const form = activeForm.querySelector('form');
+                form.insertAdjacentHTML('afterend', errorHtml);
+
+                // Auto-remove error after 10 seconds
+                setTimeout(() => {
+                    const errorElement = activeForm.querySelector('.error-message');
+                    if (errorElement) {
+                        errorElement.style.animation = 'fadeOut 0.5s ease';
+                        setTimeout(() => errorElement.remove(), 500);
+                    }
+                }, 10000);
+            }
+        }
+
+        // Add CSS animation for fadeOut
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                from { opacity: 1; transform: translateY(0); }
+                to { opacity: 0; transform: translateY(-10px); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Utility functions
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function formatTime(timeString) {
+            return new Date(`1970-01-01T${timeString}`).toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Add smooth scrolling for better UX
+        function smoothScrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Call smooth scroll when switching sections
+        const originalShowSection = showSection;
+        showSection = function (sectionName) {
+            originalShowSection(sectionName);
+            smoothScrollToTop();
+        };
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                showSection('services');
+            }
+        });
+
+        // Add touch/swipe support for mobile
+        let startX = null;
+        let startY = null;
+
+        document.addEventListener('touchstart', function (event) {
+            startX = event.touches[0].clientX;
+            startY = event.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', function (event) {
+            if (!startX || !startY) return;
+
+            const endX = event.changedTouches[0].clientX;
+            const endY = event.changedTouches[0].clientY;
+            const diffX = startX - endX;
+            const diffY = startY - endY;
+
+            // Only trigger swipe if horizontal movement is greater than vertical
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                if (diffX > 0) {
+                    // Swipe left - could trigger next section
+                } else {
+                    // Swipe right - could trigger previous section or back to services
+                    if (currentSection !== 'services') {
+                        showSection('services');
+                    }
+                }
+            }
+
+            startX = null;
+            startY = null;
+        });
+    </script>
+</body>
+
+</html>
