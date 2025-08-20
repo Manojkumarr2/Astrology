@@ -47,7 +47,7 @@ app.get('/', (req, res) => {
         errors: [],
         result: null,
         form: {},
-        title: 'Vedic Astrology Portal'
+        title: 'CKC Astrology Portal'
     });
 });
 
