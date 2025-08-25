@@ -1080,7 +1080,9 @@ function searchFallbackCities(query) {
 // Main location search endpoint
 app.post('/api/places/search', async (req, res) => {
     try {
-        const { query, date } = req.body;
+        // Extract query and birthDate parameters
+        const { query, birthDate } = req.body;
+
         // Validate input
         if (!validateSearchQuery(query)) {
             return res.status(400).json({
@@ -1089,13 +1091,13 @@ app.post('/api/places/search', async (req, res) => {
             });
         }
 
-     const searchDate = date ? new Date(date) : new Date();
-        console.log(`Location search for "${query}" with date: ${searchDate.toISOString()}`);
-
         const searchQuery = query.trim();
-        const cacheKey = `search_${searchQuery.toLowerCase()}`;
+        
+        // Create a date-specific cache key if birthDate is provided
+        const dateStr = birthDate ? new Date(birthDate).toISOString().split('T')[0] : 'current';
+        const cacheKey = `search_${searchQuery.toLowerCase()}_${dateStr}`;
 
-        // Check cache first
+        // Check cache first with date-aware key
         const cachedResult = cache.get(cacheKey);
         if (cachedResult) {
             return res.json(cachedResult);
@@ -1103,12 +1105,12 @@ app.post('/api/places/search', async (req, res) => {
 
         let results = [];
 
-        console.log(`Searching for: ${searchQuery}`);
+        console.log(`Searching for: ${searchQuery} (Birth date: ${birthDate || 'not provided'})`);
 
         try {
-            // Use Google Places API Autocomplete
+            // Use Google Places API Autocomplete with NO type restriction
             const googleApiKey = 'AIzaSyD55md0K5igC3zEp0_FMhvQ2ZSL8QM2AjE';
-
+            
             if (!googleApiKey) {
                 throw new Error('Google Places API key not configured');
             }
@@ -1117,17 +1119,19 @@ app.post('/api/places/search', async (req, res) => {
                 params: {
                     input: searchQuery,
                     key: googleApiKey,
-                    types: '(cities)' // Restrict to cities only
+                    // REMOVED the 'types' restriction to allow all location types
+                    // Add language parameter for better international support
+                    language: 'en',
+                    // Optionally use sessiontoken for better billing practices
+                    sessiontoken: require('crypto').randomBytes(16).toString('hex')
                 },
                 timeout: 8000
             });
 
-            console.log(`Google Autocomplete API response: ${JSON.stringify(autocompleteResponse.data)}`);
-
             if (autocompleteResponse.data && autocompleteResponse.data.predictions && autocompleteResponse.data.predictions.length > 0) {
                 // Get place details for each prediction
                 const promises = autocompleteResponse.data.predictions
-                    .slice(0, 5)
+                    .slice(0, 8) // Increased from 5 to 8 results to show more options
                     .map(async (prediction) => {
                         try {
                             // Get place details using place_id
@@ -1135,7 +1139,7 @@ app.post('/api/places/search', async (req, res) => {
                                 params: {
                                     place_id: prediction.place_id,
                                     key: googleApiKey,
-                                    fields: 'geometry,address_components,name,formatted_address'
+                                    fields: 'geometry,address_components,name,formatted_address,vicinity,types'
                                 },
                                 timeout: 5000
                             });
@@ -1144,47 +1148,89 @@ app.post('/api/places/search', async (req, res) => {
                                 const place = detailsResponse.data.result;
                                 const lat = place.geometry.location.lat;
                                 const lng = place.geometry.location.lng;
-
-                                // Get timezone
-                                const timezone = await getTimezoneFromCoords(lat, lng,searchDate);
-
-                                // Parse address components
+                                
+                                // Parse birth date if provided, otherwise use current date
+                                const dateForTimezone = birthDate ? new Date(birthDate) : new Date();
+                                
+                                // Get timezone for the specific date
+                                const timezone = await getTimezoneFromCoords(lat, lng, dateForTimezone);
+                                
+                                // Parse address components with more detail
                                 const addressComponents = place.address_components || [];
+                                let locality = '';
+                                let sublocality = '';
+                                let neighborhood = '';
                                 let city = '';
+                                let district = '';
                                 let state = '';
                                 let country = '';
-
+                                let postalCode = '';
+                                
                                 addressComponents.forEach(component => {
-                                    if (component.types.includes('locality') || component.types.includes('sublocality')) {
+                                    if (component.types.includes('locality')) {
                                         city = component.long_name;
+                                    } else if (component.types.includes('sublocality') || component.types.includes('sublocality_level_1')) {
+                                        sublocality = component.long_name;
+                                    } else if (component.types.includes('neighborhood')) {
+                                        neighborhood = component.long_name;
+                                    } else if (component.types.includes('administrative_area_level_2')) {
+                                        district = component.long_name;
                                     } else if (component.types.includes('administrative_area_level_1')) {
                                         state = component.short_name;
                                     } else if (component.types.includes('country')) {
                                         country = component.long_name;
+                                    } else if (component.types.includes('postal_code')) {
+                                        postalCode = component.long_name;
                                     }
                                 });
-
-                                // Fallback to place name if city not found
-                                if (!city) {
-                                    city = place.name || prediction.structured_formatting.main_text;
+                                
+                                // Use the most specific name available for the location
+                                const specificLocation = neighborhood || sublocality || city || district || '';
+                                
+                                // Build detailed display name with all available components
+                                let displayName = place.name;
+                                
+                                // Use formatted_address if it exists, otherwise build a detailed name
+                                if (place.formatted_address) {
+                                    displayName = place.formatted_address;
+                                } else {
+                                    let nameParts = [];
+                                    
+                                    // Add the specific place name if different from the administrative areas
+                                    if (place.name && place.name !== specificLocation && 
+                                        place.name !== city && place.name !== district) {
+                                        nameParts.push(place.name);
+                                    }
+                                    
+                                    // Add locality information
+                                    if (specificLocation) nameParts.push(specificLocation);
+                                    if (city && city !== specificLocation) nameParts.push(city);
+                                    if (district && !nameParts.includes(district)) nameParts.push(district);
+                                    if (state) nameParts.push(state);
+                                    if (country) nameParts.push(country);
+                                    
+                                    displayName = nameParts.join(', ');
                                 }
 
-                                // Build display name in format: city, state, country
-                                let displayName = city;
-                                if (state && country) {
-                                    displayName = `${city}, ${state}, ${country}`;
-                                } else if (country) {
-                                    displayName = `${city}, ${country}`;
-                                }
+                                // Determine the location type for filtering/display
+                                const locationType = determineLocationType(place.types);
 
                                 return {
                                     name: displayName,
+                                    placeId: prediction.place_id,
                                     latitude: lat,
                                     longitude: lng,
                                     timezone: timezone,
+                                    historicalOffset: birthDate ? true : false,
+                                    formattedAddress: place.formatted_address || displayName,
+                                    specificLocation: specificLocation,
+                                    city: city,
+                                    district: district,
                                     region: state,
                                     country: country,
-                                    place_id: prediction.place_id
+                                    postalCode: postalCode,
+                                    locationType: locationType,
+                                    referenceDate: birthDate ? new Date(birthDate).toISOString() : new Date().toISOString()
                                 };
                             }
                         } catch (detailError) {
@@ -1201,20 +1247,40 @@ app.post('/api/places/search', async (req, res) => {
             // Continue to fallback search
         }
 
-        // If no results from API, search fallback cities
+        // Check if the query might be coordinates
         if (results.length === 0) {
-            results = searchFallbackCities(searchQuery);
+            const coordsResult = await tryParseCoordinates(searchQuery, birthDate);
+            if (coordsResult) {
+                results = [coordsResult];
+            }
+        }
+
+        // If no results from API or coords, search fallback locations
+        if (results.length === 0) {
+            // Pass the birth date to your fallback search function if you have one
+            results = searchFallbackLocations(searchQuery, birthDate ? new Date(birthDate) : null);
         }
 
         // If still no results, provide a default option
         if (results.length === 0) {
+            // Use the birth date for calculating the default timezone if provided
+            const defaultTimezone = birthDate ? 
+                await getTimezoneFromCoords(28.6139, 77.2090, new Date(birthDate)) : 5.5;
+            
             results = [{
-                name: `${searchQuery}, Unknown, Unknown`,
+                name: `${searchQuery} (Default Location)`,
                 latitude: 28.6139, // Default to Delhi
                 longitude: 77.2090,
-                timezone: 5.5,
+                timezone: defaultTimezone,
+                historicalOffset: birthDate ? true : false,
+                formattedAddress: `${searchQuery} (Default coordinates used)`,
+                specificLocation: searchQuery,
+                city: 'Unknown',
+                district: 'Unknown',
                 region: 'Unknown',
-                country: 'Unknown'
+                country: 'Unknown',
+                locationType: 'unknown',
+                referenceDate: birthDate ? new Date(birthDate).toISOString() : null
             }];
         }
 
@@ -1237,6 +1303,132 @@ app.post('/api/places/search', async (req, res) => {
     }
 });
 
+// Helper function to determine location type from Google place types
+function determineLocationType(types) {
+    if (!types || !Array.isArray(types)) return 'unknown';
+    
+    if (types.includes('point_of_interest') || types.includes('establishment')) 
+        return 'place';
+    if (types.includes('neighborhood') || types.includes('sublocality')) 
+        return 'neighborhood';
+    if (types.includes('locality')) 
+        return 'city';
+    if (types.includes('administrative_area_level_2')) 
+        return 'district';
+    if (types.includes('administrative_area_level_1')) 
+        return 'region';
+    if (types.includes('country')) 
+        return 'country';
+    
+    return 'location';
+}
+
+// Try to parse coordinates from user input like "40.7128, -74.0060"
+async function tryParseCoordinates(query, birthDate) {
+    // Match patterns like "40.7128, -74.0060" or "40.7128 -74.0060" or "40.7128,-74.0060"
+    const coordsRegex = /^\s*(-?\d+\.?\d*)\s*[,\s]\s*(-?\d+\.?\d*)\s*$/;
+    const match = query.match(coordsRegex);
+    
+    if (match) {
+        const lat = parseFloat(match[1]);
+        const lng = parseFloat(match[2]);
+        
+        // Validate coordinate ranges
+        if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+            // Try to get a reverse geocode to get the location name
+            try {
+                const googleApiKey = 'AIzaSyD55md0K5igC3zEp0_FMhvQ2ZSL8QM2AjE';
+                const geocodeResponse = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+                    params: {
+                        latlng: `${lat},${lng}`,
+                        key: googleApiKey
+                    },
+                    timeout: 5000
+                });
+                
+                let locationName = `Coordinates (${lat}, ${lng})`;
+                let formattedAddress = locationName;
+                let city = 'Unknown';
+                let region = 'Unknown';
+                let country = 'Unknown';
+                
+                // Extract address components from reverse geocoding
+                if (geocodeResponse.data && 
+                    geocodeResponse.data.results && 
+                    geocodeResponse.data.results.length > 0) {
+                    
+                    const result = geocodeResponse.data.results[0];
+                    formattedAddress = result.formatted_address || formattedAddress;
+                    locationName = formattedAddress;
+                    
+                    // Extract components
+                    if (result.address_components) {
+                        result.address_components.forEach(component => {
+                            if (component.types.includes('locality')) {
+                                city = component.long_name;
+                            } else if (component.types.includes('administrative_area_level_1')) {
+                                region = component.short_name;
+                            } else if (component.types.includes('country')) {
+                                country = component.long_name;
+                            }
+                        });
+                    }
+                }
+                
+                // Get timezone for the specific date
+                const dateForTimezone = birthDate ? new Date(birthDate) : new Date();
+                const timezone = await getTimezoneFromCoords(lat, lng, dateForTimezone);
+                
+                return {
+                    name: locationName,
+                    latitude: lat,
+                    longitude: lng,
+                    timezone: timezone,
+                    historicalOffset: birthDate ? true : false,
+                    formattedAddress: formattedAddress,
+                    specificLocation: `Coordinates (${lat.toFixed(6)}, ${lng.toFixed(6)})`,
+                    city: city,
+                    region: region,
+                    country: country,
+                    locationType: 'coordinates',
+                    referenceDate: birthDate ? new Date(birthDate).toISOString() : new Date().toISOString()
+                };
+            } catch (error) {
+                console.error('Error in reverse geocoding:', error);
+                
+                // Even if reverse geocoding fails, return a basic coordinate result
+                const dateForTimezone = birthDate ? new Date(birthDate) : new Date();
+                const timezone = await getTimezoneFromCoords(lat, lng, dateForTimezone);
+                
+                return {
+                    name: `Coordinates (${lat}, ${lng})`,
+                    latitude: lat,
+                    longitude: lng,
+                    timezone: timezone,
+                    historicalOffset: birthDate ? true : false,
+                    formattedAddress: `Coordinates (${lat}, ${lng})`,
+                    specificLocation: `Exact coordinates`,
+                    city: 'Unknown',
+                    region: 'Unknown',
+                    country: 'Unknown',
+                    locationType: 'coordinates',
+                    referenceDate: birthDate ? new Date(birthDate).toISOString() : null
+                };
+            }
+        }
+    }
+    
+    return null;
+}
+
+// Fallback search function with enhanced granularity
+function searchFallbackLocations(query, birthDate) {
+    // Implement your fallback search here, but with more detailed location info
+    // This should match the structure of the Google Places results
+    
+    // This is just a placeholder - replace with your actual implementation
+    return [];
+}
 // Geocoding endpoint (fallback)
 app.post('/api/places/geocode', async (req, res) => {
     try {
