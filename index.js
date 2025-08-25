@@ -1429,6 +1429,7 @@ function searchFallbackLocations(query, birthDate) {
     // This is just a placeholder - replace with your actual implementation
     return [];
 }
+
 // Geocoding endpoint (fallback)
 app.post('/api/places/geocode', async (req, res) => {
     try {
