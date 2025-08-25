@@ -41,7 +41,7 @@
             min-height: 100vh;
             color: var(--text-primary);
             overflow-x: hidden;
-            zoom: 0.70; /* Add this line for 75% zoom */
+            zoom: 0.80;
         }
 
         /* Animated background */
@@ -124,6 +124,42 @@
             text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             position: relative;
             z-index: 1;
+        }
+
+        /* Remove old house positioning CSS and replace with: */
+        .chart-house {
+            position: relative;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            font-size: 10px;
+            font-weight: 500;
+            line-height: 2.2;
+            text-align: center;
+            padding: 6px 4px;
+            background: rgba(255, 255, 255, 0.95);
+            word-wrap: break-word;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .chart-house:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        /* Special styling for Lagna position */
+        .lagna-position {
+            background: rgba(255, 215, 0, 0.1) !important;
+            border-color: #ffd700 !important;
+        }
+
+        .lagna-position:hover {
+            background: rgba(255, 215, 0, 0.2) !important;
         }
 
         .header .subtitle {
@@ -347,8 +383,8 @@
             letter-spacing: 0.3px;
         }
 
-        .form-group input,
-        .form-group select {
+        .form-group input[type="text"],
+        .form-group input[type="datetime-local"] {
             width: 100%;
             padding: 16px 20px;
             border: 2px solid rgba(102, 126, 234, 0.2);
@@ -360,8 +396,203 @@
             backdrop-filter: blur(10px);
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        /* Location Autocomplete Styling */
+        .location-autocomplete {
+            position: relative;
+            width: 100%;
+        }
+
+        .location-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 15px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .location-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .location-input::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Location Suggestions Dropdown */
+        .location-suggestions {
+            position: absolute;
+            top: calc(100% + 2px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 15px;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(20px);
+        }
+
+        .location-suggestions.show {
+            display: block;
+            animation: dropdownSlide 0.3s ease;
+        }
+
+        @keyframes dropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .location-suggestion {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+            font-size: 0.95rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .location-suggestion:hover,
+        .location-suggestion.highlighted {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 100%);
+            color: #667eea;
+        }
+
+        .location-suggestion:last-child {
+            border-bottom: none;
+            border-radius: 0 0 13px 13px;
+        }
+
+        .location-suggestion:first-child {
+            border-radius: 13px 13px 0 0;
+        }
+
+        .suggestion-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .suggestion-details {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .location-loading {
+            padding: 20px;
+            text-align: center;
+            color: #667eea;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .location-loading::before {
+            content: '';
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .location-no-results {
+            padding: 20px;
+            text-align: center;
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Location Info Display */
+        .location-info {
+            margin-top: 10px;
+            padding: 12px 15px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(248, 249, 255, 0.8) 100%);
+            border-radius: 10px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            font-size: 0.9rem;
+            color: #667eea;
+            display: none;
+        }
+
+        .location-info.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .location-info .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .location-info .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .location-info .info-label {
+            font-weight: 600;
+        }
+
+        .location-info .info-value {
+            color: #333;
+        }
+
+        /* Gender Dropdown Styling */
+        .gender-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .gender-select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 15px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+        }
+
+        .gender-select:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
@@ -452,6 +683,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            border: none;
         }
 
         .back-btn:hover {
@@ -602,7 +834,7 @@
             line-height: 1.6;
         }
 
-        /* Vedic Chart Enhanced */
+        /* South Indian Chart Design */
         .chart-card {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(248, 249, 255, 0.8) 100%);
             border-radius: var(--border-radius);
@@ -620,147 +852,240 @@
             margin-bottom: 25px;
         }
 
-        .vedic-chart {
-            width: 400px;
-            height: 400px;
-            margin: 20px auto;
+        .south-indian-chart {
+            width: min(90vw, 600px);
+            /* Responsive width, max 600px */
+            height: min(90vw, 600px);
+            /* Maintain square aspect ratio */
+            margin: 30px auto;
             position: relative;
-            border: 3px solid #667eea;
-            background: white;
-            border-radius: 10px;
-            box-shadow: var(--shadow-medium);
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+            border: 4px solid transparent;
+            background-clip: padding-box;
+            border-radius: 20px;
+            box-shadow:
+                0 20px 60px rgba(102, 126, 234, 0.15),
+                0 8px 30px rgba(102, 126, 234, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            overflow: hidden;
+            transform: perspective(1000px) rotateX(2deg);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Add gradient border effect */
+        .south-indian-chart::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            border-radius: 24px;
+            z-index: -1;
+        }
+
+        .south-indian-chart:hover {
+            transform: perspective(1000px) rotateX(0deg) scale(1.02);
+            box-shadow:
+                0 30px 80px rgba(102, 126, 234, 0.2),
+                0 15px 40px rgba(102, 126, 234, 0.15);
         }
 
         .chart-house {
-            position: absolute;
-            border: 1px solid #ddd;
+            position: relative;
+            border: 1px solid rgba(102, 126, 234, 0.2);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            font-size: 10px;
-            font-weight: 500;
-            line-height: 1.2;
+            font-size: clamp(11px, 2vw, 14px);
+            font-weight: 600;
+            line-height: 1.3;
             text-align: center;
-            padding: 4px 3px;
-            background: rgba(255, 255, 255, 0.95);
+            padding: clamp(8px, 2vw, 12px);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 249, 255, 0.8) 100%);
+            backdrop-filter: blur(10px);
             word-wrap: break-word;
             overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+
+        .chart-house:hover {
+            background: linear-gradient(145deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 100%);
+            border-color: #667eea;
+            z-index: 10;
+            box-shadow:
+                0 8px 25px rgba(102, 126, 234, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        /* Enhanced House Numbers */
+        .house-number {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            font-size: clamp(9px, 1.5vw, 11px);
+            color: #667eea;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, #f0f8ff 100%);
+            border-radius: 50%;
+            width: clamp(18px, 3vw, 22px);
+            height: clamp(18px, 3vw, 22px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #667eea;
+            z-index: 3;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
             transition: all 0.3s ease;
         }
 
-        .chart-house:hover {
-            background: rgba(102, 126, 234, 0.1);
-            border-color: #667eea;
-            transform: scale(1.05);
-            z-index: 10;
+        .chart-house:hover .house-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.1);
         }
 
-        /* Chart house positions */
+        /* Enhanced Planet Items */
+        .planet-list {
+            font-size: clamp(10px, 2vw, 12px);
+            color: #333;
+            font-weight: 700;
+            margin-top: clamp(16px, 3vw, 20px);
+            line-height: 1.3;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            max-height: clamp(60px, 12vw, 80px);
+            overflow-y: auto;
+            width: 100%;
+            padding-right: 2px;
+        }
+
+        /* South Indian Grid Positions */
+        .chart-house.house-12 {
+            grid-row: 1;
+            grid-column: 1;
+        }
+
         .chart-house.house-1 {
-            width: 50%;
-            height: 50%;
-            top: 25%;
-            left: 25%;
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            border: 2px solid #667eea;
-            font-weight: 600;
-            color: #667eea;
-            font-size: 12px;
+            grid-row: 1;
+            grid-column: 2;
         }
 
         .chart-house.house-2 {
-            width: 25%;
-            height: 25%;
-            top: 0;
-            left: 25%;
+            grid-row: 1;
+            grid-column: 3;
         }
 
         .chart-house.house-3 {
-            width: 25%;
-            height: 25%;
-            top: 0;
-            left: 0;
-        }
-
-        .chart-house.house-4 {
-            width: 25%;
-            height: 25%;
-            top: 25%;
-            left: 0;
-        }
-
-        .chart-house.house-5 {
-            width: 25%;
-            height: 25%;
-            top: 50%;
-            left: 0;
-        }
-
-        .chart-house.house-6 {
-            width: 25%;
-            height: 25%;
-            top: 75%;
-            left: 0;
-        }
-
-        .chart-house.house-7 {
-            width: 25%;
-            height: 25%;
-            top: 75%;
-            left: 25%;
-        }
-
-        .chart-house.house-8 {
-            width: 25%;
-            height: 25%;
-            top: 75%;
-            left: 50%;
-        }
-
-        .chart-house.house-9 {
-            width: 25%;
-            height: 25%;
-            top: 75%;
-            left: 75%;
-        }
-
-        .chart-house.house-10 {
-            width: 25%;
-            height: 25%;
-            top: 50%;
-            left: 75%;
+            grid-row: 1;
+            grid-column: 4;
         }
 
         .chart-house.house-11 {
-            width: 25%;
-            height: 25%;
-            top: 25%;
-            left: 75%;
+            grid-row: 2;
+            grid-column: 1;
         }
 
-        .chart-house.house-12 {
-            width: 25%;
-            height: 25%;
-            top: 0;
-            left: 50%;
+        .chart-house.house-4 {
+            grid-row: 2;
+            grid-column: 4;
+        }
+
+        .chart-house.house-10 {
+            grid-row: 3;
+            grid-column: 1;
+        }
+
+        .chart-house.house-5 {
+            grid-row: 3;
+            grid-column: 4;
+        }
+
+        .chart-house.house-9 {
+            grid-row: 4;
+            grid-column: 1;
+        }
+
+        .chart-house.house-8 {
+            grid-row: 4;
+            grid-column: 2;
+        }
+
+        .chart-house.house-7 {
+            grid-row: 4;
+            grid-column: 3;
+        }
+
+        .chart-house.house-6 {
+            grid-row: 4;
+            grid-column: 4;
+        }
+
+        .chart-center {
+            grid-row: 2 / 4;
+            grid-column: 2 / 4;
+            border: 2px solid #667eea;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #667eea;
+            font-size: 14px;
+            text-align: center;
+            padding: 10px;
+            box-shadow: inset 0 0 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .center-title {
+            font-size: 12px;
+            margin-bottom: 8px;
+            color: #667eea;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .center-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .center-english {
+            font-size: 11px;
+            color: #666;
+            font-weight: 500;
         }
 
         .house-number {
             position: absolute;
-            top: 3px;
-            left: 3px;
+            top: 2px;
+            left: 2px;
             font-size: 8px;
             color: #667eea;
-            font-weight: 600;
+            font-weight: 700;
             background: white;
             border-radius: 50%;
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             border: 1px solid #667eea;
+            z-index: 2;
         }
 
         .planet-list {
@@ -768,125 +1093,366 @@
             color: #333;
             font-weight: 600;
             margin-top: 14px;
-            line-height: 1.3;
+            line-height: 1.2;
             display: flex;
             flex-direction: column;
             gap: 2px;
+            max-height: 50px;
+            overflow-y: auto;
+            width: 100%;
         }
 
         .planet-item {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 100%);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(102, 126, 234, 0.08) 100%);
             padding: 2px 4px;
             border-radius: 4px;
             margin: 1px 0;
             font-size: 8px;
-            border: 1px solid rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: #667eea;
+            font-weight: 600;
+            text-align: center;
         }
 
         .sign-name {
             font-size: 7px;
-            color: #666;
+            color: #888;
             margin-top: 3px;
             font-weight: 400;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        /* Compatibility Score */
-        .compatibility-score {
+
+        .planet-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: clamp(3px, 1vw, 5px) clamp(6px, 1.5vw, 8px);
+            border-radius: 8px;
+            margin: 1px 0;
+            font-size: clamp(9px, 1.8vw, 11px);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            font-weight: 700;
             text-align: center;
-            margin-bottom: 40px;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
-        .score-circle {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg, #667eea 0deg, #764ba2 180deg, #f0f2ff 360deg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            position: relative;
-            animation: rotateScore 3s ease-in-out;
+        .planet-item:hover {
+            background: linear-gradient(135deg, #7c8ef5 0%, #8a63c7 100%);
+            transform: translateY(-1px) scale(1.05);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
-        @keyframes rotateScore {
+        /* Special Lagna Planet Styling */
+        .planet-item.lagna-planet {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff4500 100%) !important;
+            color: white !important;
+            font-weight: 800 !important;
+            border: 2px solid #ff4500 !important;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4) !important;
+            animation: lagnaGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes lagnaGlow {
             from {
-                transform: rotate(0deg);
+                box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
             }
 
             to {
-                transform: rotate(360deg);
+                box-shadow: 0 6px 20px rgba(255, 107, 53, 0.6), 0 0 15px rgba(255, 107, 53, 0.3);
             }
         }
 
-        .score-inner {
-            width: 120px;
-            height: 120px;
+        /* Enhanced Sign Names */
+        .sign-name {
+            font-size: clamp(8px, 1.5vw, 10px);
+            color: #666;
+            margin-top: 6px;
+            font-weight: 500;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .chart-house:hover .sign-name {
+            opacity: 1;
+            color: #667eea;
+        }
+
+        /* Enhanced Chart Center */
+        .chart-center {
+            grid-row: 2 / 4;
+            grid-column: 2 / 4;
+            border: 3px solid #667eea;
+            background: linear-gradient(145deg, #fff3cd 0%, #ffeaa7 20%, #fdcb6e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #667eea;
+            font-size: clamp(14px, 3vw, 18px);
+            text-align: center;
+            padding: clamp(12px, 2.5vw, 16px);
+            box-shadow:
+                inset 0 2px 10px rgba(102, 126, 234, 0.2),
+                0 4px 20px rgba(102, 126, 234, 0.15);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-center::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+
+            0%,
+            100% {
+                transform: translateX(-100%);
+            }
+
+            50% {
+                transform: translateX(100%);
+            }
+        }
+
+        .center-title {
+            font-size: clamp(12px, 2.5vw, 15px);
+            margin-bottom: clamp(6px, 1.5vw, 10px);
+            color: #667eea;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 1px 3px rgba(102, 126, 234, 0.3);
+        }
+
+        .center-value {
+            font-size: clamp(16px, 3.5vw, 22px);
+            font-weight: 900;
+            color: #667eea;
+            margin-bottom: clamp(4px, 1vw, 6px);
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+        }
+
+        .center-english {
+            font-size: clamp(10px, 2vw, 13px);
+            color: #666;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+
+        /* Enhanced Chart Card Container */
+        .chart-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 249, 255, 0.8) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: clamp(25px, 5vw, 40px);
+            text-align: center;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            margin-bottom: 40px;
+            box-shadow:
+                0 20px 60px rgba(102, 126, 234, 0.1),
+                0 8px 30px rgba(102, 126, 234, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            border-radius: 25px 25px 0 0;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 30px 80px rgba(102, 126, 234, 0.15),
+                0 15px 40px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Enhanced Chart Title */
+        .chart-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.3rem, 4vw, 1.8rem);
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 30px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .chart-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        /* Enhanced Chart Legend */
+        .chart-legend {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(145deg, rgba(102, 126, 234, 0.05) 0%, rgba(248, 249, 255, 0.8) 100%);
+            border-radius: 20px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            font-size: clamp(11px, 2.5vw, 14px);
+            color: var(--text-secondary);
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .legend-item {
+            display: inline-block;
+            margin: 6px 8px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 100%);
+            border-radius: 20px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .legend-item:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(102, 126, 234, 0.1) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .planet-abbr {
+            font-weight: 800;
+            color: #667eea;
+            margin-right: 4px;
+        }
+
+        /* Mobile Responsive Adjustments */
+        @media (max-width: 768px) {
+            .south-indian-chart {
+                width: min(95vw, 500px);
+                height: min(95vw, 500px);
+                margin: 20px auto;
+                transform: none;
+            }
+
+            .south-indian-chart:hover {
+                transform: scale(1.01);
+            }
+
+            .chart-card {
+                padding: 20px 15px;
+                margin-bottom: 25px;
+            }
+
+            .chart-legend {
+                padding: 20px 15px;
+                margin-top: 20px;
+            }
+
+            .legend-item {
+                margin: 4px 6px;
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .south-indian-chart {
+                width: min(98vw, 400px);
+                height: min(98vw, 400px);
+            }
+
+            .planet-list {
+                max-height: 50px;
+            }
+
+            .chart-house {
+                padding: 6px 4px;
+            }
+        }
+
+        /* Special styling for houses containing Lagna */
+        .chart-house.has-lagna {
+            border: 2px solid #ff6b35 !important;
+            background: linear-gradient(145deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 107, 53, 0.05) 100%) !important;
+            animation: lagnaHousePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes lagnaHousePulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(255, 107, 53, 0.5), inset 0 0 10px rgba(255, 107, 53, 0.1);
+            }
+        }
+
+        /* Custom Scrollbar for Planet Lists */
+        .planet-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .planet-list::-webkit-scrollbar-track {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 2px;
+        }
+
+        .planet-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        .planet-list::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #7c8ef5 0%, #8a63c7 100%);
+        }
+
+        .lagna-marker {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff6b6b;
+            color: white;
             border-radius: 50%;
-            background: white;
+            width: 18px;
+            height: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            font-weight: 700;
-            color: #667eea;
-            box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Porutham Cards */
-        .porutham-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .porutham-card {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(248, 249, 255, 0.8) 100%);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            border: 1px solid rgba(102, 126, 234, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .porutham-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-soft);
-        }
-
-        .porutham-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .porutham-name {
-            font-weight: 600;
-            color: var(--text-primary);
-            font-size: 1.1rem;
-        }
-
-        .porutham-status {
-            padding: 6px 16px;
-            border-radius: 25px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .porutham-status.compatible {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            color: #155724;
-        }
-
-        .porutham-status.incompatible {
-            background: linear-gradient(135deg, #f8d7da 0%, #f1b0b7 100%);
-            color: #721c24;
-        }
-
-        .porutham-status.neutral {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            color: #856404;
+            font-size: 8px;
+            font-weight: bold;
+            border: 2px solid white;
+            z-index: 3;
+            box-shadow: 0 2px 10px rgba(255, 107, 107, 0.4);
         }
 
         /* Error Message */
@@ -918,7 +1484,7 @@
 
         /* Chart Legend */
         .chart-legend {
-            margin-top: 20px;
+            margin-top: 30px;
             font-size: 12px;
             color: var(--text-secondary);
             text-align: center;
@@ -927,14 +1493,91 @@
         .legend-item {
             display: inline-block;
             margin: 5px 12px;
-            padding: 4px 8px;
+            padding: 6px 12px;
             background: rgba(102, 126, 234, 0.1);
-            border-radius: 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
         }
 
         .planet-abbr {
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        /* Compatibility specific styles */
+        .compatibility-score {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .score-inner {
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .porutham-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .porutham-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .porutham-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .porutham-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .porutham-name {
             font-weight: 600;
             color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        .porutham-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .porutham-status.compatible {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .porutham-status.incompatible {
+            background: #f8d7da;
+            color: #721c24;
         }
 
         /* Responsive Design */
@@ -969,14 +1612,18 @@
                 grid-template-columns: 1fr;
             }
 
-            .vedic-chart {
-                width: 320px;
-                height: 320px;
+            .south-indian-chart {
+                width: 300px;
+                height: 300px;
             }
 
             .nav-pills {
                 flex-direction: column;
                 align-items: center;
+            }
+
+            .location-suggestions {
+                max-height: 200px;
             }
         }
 
@@ -1100,53 +1747,43 @@
             <form id="birth-chart-form">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="year"><i class="fas fa-calendar-alt"></i> Year</label>
-                        <input type="number" id="year" name="year" required min="1900" max="2100" placeholder="1990">
+                        <label for="birth-datetime"><i class="fas fa-calendar-clock"></i> Birth Date & Time</label>
+                        <input type="datetime-local" id="birth-datetime" name="birth-datetime" required>
                     </div>
                     <div class="form-group">
-                        <label for="month"><i class="fas fa-calendar"></i> Month</label>
-                        <select id="month" name="month" required>
-                            <option value="">Select Month</option>
-                            <option value="1">January</option>
-                            <option value="2">February</option>
-                            <option value="3">March</option>
-                            <option value="4">April</option>
-                            <option value="5">May</option>
-                            <option value="6">June</option>
-                            <option value="7">July</option>
-                            <option value="8">August</option>
-                            <option value="9">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option value="12">December</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="day"><i class="fas fa-calendar-day"></i> Day</label>
-                        <input type="number" id="day" name="day" required min="1" max="31" placeholder="15">
-                    </div>
-                    <div class="form-group">
-                        <label for="hour"><i class="fas fa-clock"></i> Hour (24-hour)</label>
-                        <input type="number" id="hour" name="hour" required min="0" max="23" placeholder="14">
-                    </div>
-                    <div class="form-group">
-                        <label for="minute"><i class="fas fa-clock"></i> Minute</label>
-                        <input type="number" id="minute" name="minute" required min="0" max="59" placeholder="30">
-                    </div>
-                    <div class="form-group">
-                        <label for="timezone"><i class="fas fa-globe"></i> Timezone (UTC offset)</label>
-                        <input type="number" id="timezone" name="timezone" required step="0.5" min="-12" max="14"
-                            placeholder="5.5">
-                    </div>
-                    <div class="form-group">
-                        <label for="latitude"><i class="fas fa-map-marker-alt"></i> Latitude</label>
-                        <input type="number" id="latitude" name="latitude" required step="any" placeholder="13.0827">
-                    </div>
-                    <div class="form-group">
-                        <label for="longitude"><i class="fas fa-map-marker-alt"></i> Longitude</label>
-                        <input type="number" id="longitude" name="longitude" required step="any" placeholder="80.2707">
+                        <label for="birth-location"><i class="fas fa-map-marker-alt"></i> Birth Location</label>
+                        <div class="location-autocomplete">
+                            <input type="text" class="location-input" id="birth-location" name="birth-location"
+                                placeholder="Start typing your birth city..." autocomplete="off" required>
+                            <div class="location-suggestions" id="birth-location-suggestions"></div>
+                        </div>
+                        <div class="location-info" id="birth-location-info">
+                            <div class="info-row">
+                                <span class="info-label">Location:</span>
+                                <span class="info-value" id="birth-location-display">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Timezone:</span>
+                                <span class="info-value" id="birth-timezone-display">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Coordinates:</span>
+                                <span class="info-value" id="birth-coordinates-display">-</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Hidden fields for API compatibility -->
+                <input type="hidden" id="birth-year" name="year">
+                <input type="hidden" id="birth-month" name="month">
+                <input type="hidden" id="birth-day" name="day">
+                <input type="hidden" id="birth-hour" name="hour">
+                <input type="hidden" id="birth-minute" name="minute">
+                <input type="hidden" id="birth-timezone" name="timezone">
+                <input type="hidden" id="birth-latitude" name="latitude">
+                <input type="hidden" id="birth-longitude" name="longitude">
+
                 <button type="submit" class="btn-primary">
                     <span class="btn-text">Analyze Birth Chart</span>
                     <div class="loading-spinner"></div>
@@ -1176,27 +1813,40 @@
                         </div>
                         <div class="form-group">
                             <label for="person1-gender"><i class="fas fa-venus-mars"></i> Gender</label>
-                            <select id="person1-gender" name="person1-gender" required>
-                                <option value="">Select Gender</option>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                            </select>
+                            <div class="gender-dropdown">
+                                <select class="gender-select" id="person1-gender" name="person1-gender" required>
+                                    <option value="">Select gender...</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="person1-date"><i class="fas fa-calendar-alt"></i> Birth Date</label>
-                            <input type="date" id="person1-date" name="person1-date" required>
+                            <label for="person1-datetime"><i class="fas fa-calendar-clock"></i> Birth Date &
+                                Time</label>
+                            <input type="datetime-local" id="person1-datetime" name="person1-datetime" required>
                         </div>
                         <div class="form-group">
-                            <label for="person1-time"><i class="fas fa-clock"></i> Birth Time</label>
-                            <input type="time" id="person1-time" name="person1-time" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="person1-lat"><i class="fas fa-map-marker-alt"></i> Latitude</label>
-                            <input type="number" id="person1-lat" name="person1-lat" step="any" placeholder="13.0827">
-                        </div>
-                        <div class="form-group">
-                            <label for="person1-lng"><i class="fas fa-map-marker-alt"></i> Longitude</label>
-                            <input type="number" id="person1-lng" name="person1-lng" step="any" placeholder="80.2707">
+                            <label for="person1-location"><i class="fas fa-map-marker-alt"></i> Birth Location</label>
+                            <div class="location-autocomplete">
+                                <input type="text" class="location-input" id="person1-location" name="person1-location"
+                                    placeholder="Start typing birth city..." autocomplete="off" required>
+                                <div class="location-suggestions" id="person1-location-suggestions"></div>
+                            </div>
+                            <div class="location-info" id="person1-location-info">
+                                <div class="info-row">
+                                    <span class="info-label">Location:</span>
+                                    <span class="info-value" id="person1-location-display">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Timezone:</span>
+                                    <span class="info-value" id="person1-timezone-display">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Coordinates:</span>
+                                    <span class="info-value" id="person1-coordinates-display">-</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1213,30 +1863,63 @@
                         </div>
                         <div class="form-group">
                             <label for="person2-gender"><i class="fas fa-venus-mars"></i> Gender</label>
-                            <select id="person2-gender" name="person2-gender" required>
-                                <option value="">Select Gender</option>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                            </select>
+                            <div class="gender-dropdown">
+                                <select class="gender-select" id="person2-gender" name="person2-gender" required>
+                                    <option value="">Select gender...</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="person2-date"><i class="fas fa-calendar-alt"></i> Birth Date</label>
-                            <input type="date" id="person2-date" name="person2-date" required>
+                            <label for="person2-datetime"><i class="fas fa-calendar-clock"></i> Birth Date &
+                                Time</label>
+                            <input type="datetime-local" id="person2-datetime" name="person2-datetime" required>
                         </div>
                         <div class="form-group">
-                            <label for="person2-time"><i class="fas fa-clock"></i> Birth Time</label>
-                            <input type="time" id="person2-time" name="person2-time" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="person2-lat"><i class="fas fa-map-marker-alt"></i> Latitude</label>
-                            <input type="number" id="person2-lat" name="person2-lat" step="any" placeholder="13.0827">
-                        </div>
-                        <div class="form-group">
-                            <label for="person2-lng"><i class="fas fa-map-marker-alt"></i> Longitude</label>
-                            <input type="number" id="person2-lng" name="person2-lng" step="any" placeholder="80.2707">
+                            <label for="person2-location"><i class="fas fa-map-marker-alt"></i> Birth Location</label>
+                            <div class="location-autocomplete">
+                                <input type="text" class="location-input" id="person2-location" name="person2-location"
+                                    placeholder="Start typing birth city..." autocomplete="off" required>
+                                <div class="location-suggestions" id="person2-location-suggestions"></div>
+                            </div>
+                            <div class="location-info" id="person2-location-info">
+                                <div class="info-row">
+                                    <span class="info-label">Location:</span>
+                                    <span class="info-value" id="person2-location-display">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Timezone:</span>
+                                    <span class="info-value" id="person2-timezone-display">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Coordinates:</span>
+                                    <span class="info-value" id="person2-coordinates-display">-</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Hidden fields for person 1 -->
+                <input type="hidden" id="person1-year" name="person1-year">
+                <input type="hidden" id="person1-month" name="person1-month">
+                <input type="hidden" id="person1-day" name="person1-day">
+                <input type="hidden" id="person1-hour" name="person1-hour">
+                <input type="hidden" id="person1-minute" name="person1-minute">
+                <input type="hidden" id="person1-timezone" name="person1-timezone">
+                <input type="hidden" id="person1-latitude" name="person1-latitude">
+                <input type="hidden" id="person1-longitude" name="person1-longitude">
+
+                <!-- Hidden fields for person 2 -->
+                <input type="hidden" id="person2-year" name="person2-year">
+                <input type="hidden" id="person2-month" name="person2-month">
+                <input type="hidden" id="person2-day" name="person2-day">
+                <input type="hidden" id="person2-hour" name="person2-hour">
+                <input type="hidden" id="person2-minute" name="person2-minute">
+                <input type="hidden" id="person2-timezone" name="person2-timezone">
+                <input type="hidden" id="person2-latitude" name="person2-latitude">
+                <input type="hidden" id="person2-longitude" name="person2-longitude">
 
                 <button type="submit" class="btn-primary">
                     <span class="btn-text">Analyze Compatibility</span>
@@ -1257,57 +1940,43 @@
             <form id="behavior-form">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="behavior-year"><i class="fas fa-calendar-alt"></i> Year</label>
-                        <input type="number" id="behavior-year" name="year" required min="1900" max="2100"
-                            placeholder="1990">
+                        <label for="behavior-datetime"><i class="fas fa-calendar-clock"></i> Birth Date & Time</label>
+                        <input type="datetime-local" id="behavior-datetime" name="behavior-datetime" required>
                     </div>
                     <div class="form-group">
-                        <label for="behavior-month"><i class="fas fa-calendar"></i> Month</label>
-                        <select id="behavior-month" name="month" required>
-                            <option value="">Select Month</option>
-                            <option value="1">January</option>
-                            <option value="2">February</option>
-                            <option value="3">March</option>
-                            <option value="4">April</option>
-                            <option value="5">May</option>
-                            <option value="6">June</option>
-                            <option value="7">July</option>
-                            <option value="8">August</option>
-                            <option value="9">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option value="12">December</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="behavior-day"><i class="fas fa-calendar-day"></i> Day</label>
-                        <input type="number" id="behavior-day" name="day" required min="1" max="31" placeholder="15">
-                    </div>
-                    <div class="form-group">
-                        <label for="behavior-hour"><i class="fas fa-clock"></i> Hour (24-hour)</label>
-                        <input type="number" id="behavior-hour" name="hour" required min="0" max="23" placeholder="14">
-                    </div>
-                    <div class="form-group">
-                        <label for="behavior-minute"><i class="fas fa-clock"></i> Minute</label>
-                        <input type="number" id="behavior-minute" name="minute" required min="0" max="59"
-                            placeholder="30">
-                    </div>
-                    <div class="form-group">
-                        <label for="behavior-timezone"><i class="fas fa-globe"></i> Timezone (UTC offset)</label>
-                        <input type="number" id="behavior-timezone" name="timezone" required step="0.5" min="-12"
-                            max="14" placeholder="5.5">
-                    </div>
-                    <div class="form-group">
-                        <label for="behavior-latitude"><i class="fas fa-map-marker-alt"></i> Latitude</label>
-                        <input type="number" id="behavior-latitude" name="latitude" required step="any"
-                            placeholder="13.0827">
-                    </div>
-                    <div class="form-group">
-                        <label for="behavior-longitude"><i class="fas fa-map-marker-alt"></i> Longitude</label>
-                        <input type="number" id="behavior-longitude" name="longitude" required step="any"
-                            placeholder="80.2707">
+                        <label for="behavior-location"><i class="fas fa-map-marker-alt"></i> Birth Location</label>
+                        <div class="location-autocomplete">
+                            <input type="text" class="location-input" id="behavior-location" name="behavior-location"
+                                placeholder="Start typing your birth city..." autocomplete="off" required>
+                            <div class="location-suggestions" id="behavior-location-suggestions"></div>
+                        </div>
+                        <div class="location-info" id="behavior-location-info">
+                            <div class="info-row">
+                                <span class="info-label">Location:</span>
+                                <span class="info-value" id="behavior-location-display">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Timezone:</span>
+                                <span class="info-value" id="behavior-timezone-display">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Coordinates:</span>
+                                <span class="info-value" id="behavior-coordinates-display">-</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Hidden fields for API compatibility -->
+                <input type="hidden" id="behavior-year" name="year">
+                <input type="hidden" id="behavior-month" name="month">
+                <input type="hidden" id="behavior-day" name="day">
+                <input type="hidden" id="behavior-hour" name="hour">
+                <input type="hidden" id="behavior-minute" name="minute">
+                <input type="hidden" id="behavior-timezone" name="timezone">
+                <input type="hidden" id="behavior-latitude" name="latitude">
+                <input type="hidden" id="behavior-longitude" name="longitude">
+
                 <button type="submit" class="btn-primary">
                     <span class="btn-text">Predict Behavior</span>
                     <div class="loading-spinner"></div>
@@ -1338,7 +2007,9 @@
     <script>
         // Global variables
         let currentSection = 'services';
-        let currentResults = null;
+        let locationInstances = new Map();
+        let selectedLocations = new Map();
+        let searchTimeouts = new Map();
 
         // Planet abbreviations for charts
         const planetAbbreviations = {
@@ -1347,9 +2018,335 @@
             'Ketu': 'Ke', 'Uranus': 'Ur', 'Neptune': 'Ne', 'Pluto': 'Pl', 'Lagna': 'Lg'
         };
 
-        // Initialize the application
+        // Signs mapping for Tamil to English
+        const signMapping = {
+            'மேஷம்': 'Aries',
+            'ரிஷபம்': 'Taurus',
+            'மிதுனம்': 'Gemini',
+            'கடகம்': 'Cancer',
+            'சிம்மம்': 'Leo',
+            'கன்னி': 'Virgo',
+            'துலாம்': 'Libra',
+            'விருச்சிகம்': 'Scorpio',
+            'தனுசு': 'Sagittarius',
+            'மகரம்': 'Capricorn',
+            'கும்பம்': 'Aquarius',
+            'மீனம்': 'Pisces'
+        };
+
+        // Sign numbers to names mapping (1-12 for zodiac signs)
+        const signNumbers = {
+            1: 'Aries', 2: 'Taurus', 3: 'Gemini', 4: 'Cancer',
+            5: 'Leo', 6: 'Virgo', 7: 'Libra', 8: 'Scorpio',
+            9: 'Sagittarius', 10: 'Capricorn', 11: 'Aquarius', 12: 'Pisces'
+        };
+
+        // Location Autocomplete Class (CSP-compliant)
+        class LocationAutocomplete {
+            constructor(inputId) {
+                this.inputId = inputId;
+                this.input = document.getElementById(inputId);
+                this.suggestionsContainer = document.getElementById(`${inputId}-suggestions`);
+                this.locationData = null;
+                this.currentQuery = '';
+                this.highlightedIndex = -1;
+
+                if (!this.input || !this.suggestionsContainer) {
+                    console.error(`LocationAutocomplete: Elements not found for ${inputId}`);
+                    return;
+                }
+
+                this.init();
+            }
+
+            init() {
+                // Input events
+                this.input.addEventListener('input', (e) => this.handleInput(e));
+                this.input.addEventListener('keydown', (e) => this.handleKeydown(e));
+                this.input.addEventListener('focus', () => this.handleFocus());
+                this.input.addEventListener('blur', (e) => this.handleBlur(e));
+
+                // Suggestions container events
+                this.suggestionsContainer.addEventListener('mousedown', (e) => {
+                    e.preventDefault(); // Prevent blur
+                });
+
+                this.suggestionsContainer.addEventListener('click', (e) => {
+                    if (e.target.closest('.location-suggestion')) {
+                        this.selectSuggestion(e.target.closest('.location-suggestion'));
+                    }
+                });
+
+                // Close suggestions on outside click
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.location-autocomplete') ||
+                        !e.target.closest('.location-autocomplete').contains(this.input)) {
+                        this.hideSuggestions();
+                    }
+                });
+            }
+
+            handleInput(e) {
+                const query = e.target.value.trim();
+                this.currentQuery = query;
+
+                if (query.length < 2) {
+                    this.hideSuggestions();
+                    this.clearLocationData();
+                    return;
+                }
+
+                // Clear existing timeout
+                if (searchTimeouts.has(this.inputId)) {
+                    clearTimeout(searchTimeouts.get(this.inputId));
+                }
+
+                // Debounce search
+                const timeoutId = setTimeout(() => {
+                    this.searchLocations(query);
+                }, 300);
+
+                searchTimeouts.set(this.inputId, timeoutId);
+            }
+
+            handleKeydown(e) {
+                const suggestions = this.suggestionsContainer.querySelectorAll('.location-suggestion');
+
+                switch (e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        this.highlightedIndex = Math.min(this.highlightedIndex + 1, suggestions.length - 1);
+                        this.updateHighlight();
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        this.highlightedIndex = Math.max(this.highlightedIndex - 1, -1);
+                        this.updateHighlight();
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        if (this.highlightedIndex >= 0 && suggestions[this.highlightedIndex]) {
+                            this.selectSuggestion(suggestions[this.highlightedIndex]);
+                        }
+                        break;
+                    case 'Escape':
+                        e.preventDefault();
+                        this.hideSuggestions();
+                        this.input.blur();
+                        break;
+                }
+            }
+
+            handleFocus() {
+                if (this.currentQuery.length >= 2) {
+                    this.showSuggestions();
+                }
+            }
+
+            handleBlur(e) {
+                // Delay hiding to allow clicks on suggestions
+                setTimeout(() => {
+                    if (!this.suggestionsContainer.contains(document.activeElement)) {
+                        this.hideSuggestions();
+                    }
+                }, 150);
+            }
+
+            async searchLocations(query) {
+                try {
+                    this.showLoading();
+
+
+                    let birthDate = null;
+                    const prefix = this.inputId.replace('-location', '');
+                    const dateTimeInput = document.getElementById(`${prefix}-datetime`);
+
+                    if (dateTimeInput && dateTimeInput.value) {
+                        birthDate = new Date(dateTimeInput.value);
+                        console.log(`Using birth date for timezone calculation: ${birthDate.toISOString()}`);
+                    }
+
+                    // Use backend API for location search
+                    const response = await fetch('/api/places/search', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            query: query,
+                            date: birthDate ? birthDate.toISOString() : null
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Search service unavailable');
+                    }
+
+                    const data = await response.json();
+
+                    if (data.success && data.results) {
+                        this.displaySuggestions(data.results);
+                    } else {
+                        this.showNoResults();
+                    }
+
+                } catch (error) {
+                    console.error('Location search error:', error);
+                    // Fallback to manual geocoding
+                    this.showManualOption(query);
+                }
+            }
+
+            showLoading() {
+                this.suggestionsContainer.innerHTML = '<div class="location-loading">Searching locations...</div>';
+                this.showSuggestions();
+            }
+
+            displaySuggestions(results) {
+                if (results.length === 0) {
+                    this.showNoResults();
+                    return;
+                }
+
+                this.suggestionsContainer.innerHTML = results.map(location => `
+                <div class="location-suggestion" 
+                     data-name="${location.name}"
+                     data-lat="${location.latitude}"
+                     data-lng="${location.longitude}"
+                     data-timezone="${location.timezone || 5.5}">
+                    <div class="suggestion-name">${location.name}</div>
+                    <div class="suggestion-details">
+                        ${location.region ? location.region + ', ' : ''}${location.country || ''}
+                        ${location.timezone ? ` (UTC ${location.timezone >= 0 ? '+' : ''}${location.timezone})` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+                this.highlightedIndex = -1;
+                this.showSuggestions();
+            }
+
+            showNoResults() {
+                this.suggestionsContainer.innerHTML = `
+                <div class="location-no-results">
+                    No locations found. Try a different spelling or city name.
+                </div>
+                <div class="location-suggestion" 
+                     data-manual="true"
+                     data-name="${this.currentQuery}"
+                     data-lat="28.6139"
+                     data-lng="77.2090"
+                     data-timezone="5.5">
+                    <div class="suggestion-name">Use "${this.currentQuery}" anyway</div>
+                    <div class="suggestion-details">Manual entry with default coordinates (Delhi, India)</div>
+                </div>
+            `;
+                this.showSuggestions();
+            }
+
+            showManualOption(query) {
+                this.suggestionsContainer.innerHTML = `
+                <div class="location-no-results">
+                    Search service unavailable. Using manual entry.
+                </div>
+                <div class="location-suggestion" 
+                     data-manual="true"
+                     data-name="${query}"
+                     data-lat="28.6139"
+                     data-lng="77.2090"
+                     data-timezone="5.5">
+                    <div class="suggestion-name">Use "${query}"</div>
+                    <div class="suggestion-details">Manual entry with default coordinates (Delhi, India)</div>
+                </div>
+            `;
+                this.showSuggestions();
+            }
+
+            selectSuggestion(suggestionElement) {
+                const name = suggestionElement.dataset.name;
+                const lat = parseFloat(suggestionElement.dataset.lat);
+                const lng = parseFloat(suggestionElement.dataset.lng);
+                const timezone = parseFloat(suggestionElement.dataset.timezone);
+                const isManual = suggestionElement.dataset.manual === 'true';
+
+                this.input.value = name;
+                this.locationData = {
+                    name: name,
+                    latitude: lat,
+                    longitude: lng,
+                    timezone: timezone,
+                    isManual: isManual
+                };
+
+                this.updateLocationInfo();
+                selectedLocations.set(this.inputId, this.locationData);
+                this.hideSuggestions();
+
+                // Show success notification for manual entries
+                if (isManual) {
+                    showNotification('Location set manually with default coordinates', 'success');
+                }
+            }
+
+            updateHighlight() {
+                const suggestions = this.suggestionsContainer.querySelectorAll('.location-suggestion');
+                suggestions.forEach((suggestion, index) => {
+                    suggestion.classList.toggle('highlighted', index === this.highlightedIndex);
+                });
+
+                // Scroll highlighted item into view
+                if (this.highlightedIndex >= 0 && suggestions[this.highlightedIndex]) {
+                    suggestions[this.highlightedIndex].scrollIntoView({ block: 'nearest' });
+                }
+            }
+
+            showSuggestions() {
+                this.suggestionsContainer.classList.add('show');
+            }
+
+            hideSuggestions() {
+                this.suggestionsContainer.classList.remove('show');
+                this.highlightedIndex = -1;
+            }
+
+            updateLocationInfo() {
+                if (!this.locationData) return;
+
+                const prefix = this.inputId.replace('-location', '');
+                const infoContainer = document.getElementById(`${prefix}-location-info`);
+
+                if (infoContainer) {
+                    const locationDisplay = document.getElementById(`${prefix}-location-display`);
+                    const timezoneDisplay = document.getElementById(`${prefix}-timezone-display`);
+                    const coordinatesDisplay = document.getElementById(`${prefix}-coordinates-display`);
+
+                    if (locationDisplay) locationDisplay.textContent = this.locationData.name;
+                    if (timezoneDisplay) timezoneDisplay.textContent = `UTC ${this.locationData.timezone >= 0 ? '+' : ''}${this.locationData.timezone}`;
+                    if (coordinatesDisplay) coordinatesDisplay.textContent = `${this.locationData.latitude.toFixed(4)}, ${this.locationData.longitude.toFixed(4)}`;
+
+                    infoContainer.classList.add('show');
+                }
+            }
+
+            clearLocationData() {
+                this.locationData = null;
+                selectedLocations.delete(this.inputId);
+
+                const prefix = this.inputId.replace('-location', '');
+                const infoContainer = document.getElementById(`${prefix}-location-info`);
+
+                if (infoContainer) {
+                    infoContainer.classList.remove('show');
+                }
+            }
+
+            getLocationData() {
+                return this.locationData;
+            }
+        }
+
+        // Initialize application
         document.addEventListener('DOMContentLoaded', function () {
             setupEventListeners();
+            initializeLocationAutocomplete();
             showSection('services');
         });
 
@@ -1376,8 +2373,96 @@
             document.getElementById('behavior-form').addEventListener('submit', handleBehaviorSubmit);
         }
 
+        function initializeLocationAutocomplete() {
+            // Initialize all location autocomplete inputs
+            const locationInputIds = [
+                'birth-location',
+                'person1-location',
+                'person2-location',
+                'behavior-location'
+            ];
+
+            locationInputIds.forEach(id => {
+                try {
+                    const autocomplete = new LocationAutocomplete(id);
+                    locationInstances.set(id, autocomplete);
+                } catch (error) {
+                    console.error(`Failed to initialize autocomplete for ${id}:`, error);
+                }
+            });
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            animation: slideInRight 0.3s ease;
+            max-width: 300px;
+            ${type === 'success' ? 'background: linear-gradient(135deg, #28a745, #20c997);' : ''}
+            ${type === 'error' ? 'background: linear-gradient(135deg, #dc3545, #e74c3c);' : ''}
+        `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add CSS for notifications
+        const notificationStyle = document.createElement('style');
+        notificationStyle.textContent = `
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    `;
+        document.head.appendChild(notificationStyle);
+
+        async function getLocationFromSelection(inputId) {
+            const autocomplete = locationInstances.get(inputId);
+            const locationData = selectedLocations.get(inputId);
+
+            if (!locationData) {
+                throw new Error('Please select a valid location');
+            }
+
+            return {
+                latitude: locationData.latitude,
+                longitude: locationData.longitude,
+                timezone: locationData.timezone,
+                name: locationData.name
+            };
+        }
+
+        function prepareDateTimeData(datetimeInput) {
+            const date = new Date(datetimeInput);
+
+            return {
+                year: date.getFullYear(),
+                month: date.getMonth() + 1,
+                day: date.getDate(),
+                hour: date.getHours(),
+                minute: date.getMinutes()
+            };
+        }
+
         function showSection(sectionName) {
-            currentSection = 'sectionName';
+            currentSection = sectionName;
 
             // Hide all sections
             document.querySelectorAll('.services-grid, .form-section, .results-section').forEach(el => {
@@ -1411,31 +2496,61 @@
         async function handleBirthChartSubmit(event) {
             event.preventDefault();
 
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData);
-
-            // Convert numeric fields
-            ['year', 'month', 'day', 'hour', 'minute', 'timezone', 'latitude', 'longitude'].forEach(field => {
-                data[field] = parseFloat(data[field]);
-            });
-
             try {
                 setLoadingState(true, 'birth-chart');
+
+                const formData = new FormData(event.target);
+                const birthDateTime = formData.get('birth-datetime');
+
+                if (!birthDateTime) {
+                    throw new Error('Please enter birth date and time');
+                }
+
+                // Get location data
+                const locationData = await getLocationFromSelection('birth-location');
+
+                // Prepare date/time data
+                const dateTimeData = prepareDateTimeData(birthDateTime);
+
+                // Populate hidden fields for API compatibility
+                document.getElementById('birth-year').value = dateTimeData.year;
+                document.getElementById('birth-month').value = dateTimeData.month;
+                document.getElementById('birth-day').value = dateTimeData.day;
+                document.getElementById('birth-hour').value = dateTimeData.hour;
+                document.getElementById('birth-minute').value = dateTimeData.minute;
+                document.getElementById('birth-timezone').value = locationData.timezone;
+                document.getElementById('birth-latitude').value = locationData.latitude;
+                document.getElementById('birth-longitude').value = locationData.longitude;
+
+                // Prepare data for API
+                const apiData = {
+                    year: dateTimeData.year,
+                    month: dateTimeData.month,
+                    day: dateTimeData.day,
+                    hour: dateTimeData.hour,
+                    minute: dateTimeData.minute,
+                    timezone: locationData.timezone,
+                    latitude: locationData.latitude,
+                    longitude: locationData.longitude
+                };
+
                 const response = await fetch('/api/astrology/calculate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(apiData)
                 });
 
                 const result = await response.json();
 
                 if (result.success) {
                     displayBirthChartResults(result.data);
+                    showNotification('Birth chart calculated successfully!', 'success');
                 } else {
-                    showError(result.errors || ['An error occurred'], 'birth-chart');
+                    showError(result.errors || ['An error occurred during calculation'], 'birth-chart');
                 }
             } catch (error) {
-                showError(['Network error: ' + error.message], 'birth-chart');
+                console.error('Birth chart submission error:', error);
+                showError(['Error: ' + error.message], 'birth-chart');
             } finally {
                 setLoadingState(false, 'birth-chart');
             }
@@ -1444,28 +2559,83 @@
         async function handleCompatibilitySubmit(event) {
             event.preventDefault();
 
-            const formData = new FormData(event.target);
-            const data = {
-                person1: {
-                    name: formData.get('person1-name'),
-                    gender: formData.get('person1-gender'),
-                    birthDate: formData.get('person1-date'),
-                    birthTime: formData.get('person1-time'),
-                    latitude: parseFloat(formData.get('person1-lat')) || 13.0827,
-                    longitude: parseFloat(formData.get('person1-lng')) || 80.2707
-                },
-                person2: {
-                    name: formData.get('person2-name'),
-                    gender: formData.get('person2-gender'),
-                    birthDate: formData.get('person2-date'),
-                    birthTime: formData.get('person2-time'),
-                    latitude: parseFloat(formData.get('person2-lat')) || 13.0827,
-                    longitude: parseFloat(formData.get('person2-lng')) || 80.2707
-                }
-            };
-
             try {
                 setLoadingState(true, 'compatibility');
+
+                const formData = new FormData(event.target);
+
+                // Get person 1 data
+                const person1DateTime = formData.get('person1-datetime');
+                const person1Gender = formData.get('person1-gender');
+
+                if (!person1DateTime || !person1Gender) {
+                    throw new Error('Please fill all Person 1 details');
+                }
+
+                const person1LocationData = await getLocationFromSelection('person1-location');
+                const person1DateTimeData = prepareDateTimeData(person1DateTime);
+
+                // Get person 2 data
+                const person2DateTime = formData.get('person2-datetime');
+                const person2Gender = formData.get('person2-gender');
+
+                if (!person2DateTime || !person2Gender) {
+                    throw new Error('Please fill all Person 2 details');
+                }
+
+                const person2LocationData = await getLocationFromSelection('person2-location');
+                const person2DateTimeData = prepareDateTimeData(person2DateTime);
+
+                // Populate hidden fields
+                document.getElementById('person1-year').value = person1DateTimeData.year;
+                document.getElementById('person1-month').value = person1DateTimeData.month;
+                document.getElementById('person1-day').value = person1DateTimeData.day;
+                document.getElementById('person1-hour').value = person1DateTimeData.hour;
+                document.getElementById('person1-minute').value = person1DateTimeData.minute;
+                document.getElementById('person1-timezone').value = person1LocationData.timezone;
+                document.getElementById('person1-latitude').value = person1LocationData.latitude;
+                document.getElementById('person1-longitude').value = person1LocationData.longitude;
+
+                document.getElementById('person2-year').value = person2DateTimeData.year;
+                document.getElementById('person2-month').value = person2DateTimeData.month;
+                document.getElementById('person2-day').value = person2DateTimeData.day;
+                document.getElementById('person2-hour').value = person2DateTimeData.hour;
+                document.getElementById('person2-minute').value = person2DateTimeData.minute;
+                document.getElementById('person2-timezone').value = person2LocationData.timezone;
+                document.getElementById('person2-latitude').value = person2LocationData.latitude;
+                document.getElementById('person2-longitude').value = person2LocationData.longitude;
+
+                const data = {
+                    person1: {
+                        name: formData.get('person1-name'),
+                        gender: person1Gender,
+                        birthDate: person1DateTime.split('T')[0],
+                        birthTime: person1DateTime.split('T')[1],
+                        latitude: person1LocationData.latitude,
+                        longitude: person1LocationData.longitude,
+                        timezone: person1LocationData.timezone,
+                        year: person1DateTimeData.year,
+                        month: person1DateTimeData.month,
+                        day: person1DateTimeData.day,
+                        hour: person1DateTimeData.hour,
+                        minute: person1DateTimeData.minute
+                    },
+                    person2: {
+                        name: formData.get('person2-name'),
+                        gender: person2Gender,
+                        birthDate: person2DateTime.split('T')[0],
+                        birthTime: person2DateTime.split('T')[1],
+                        latitude: person2LocationData.latitude,
+                        longitude: person2LocationData.longitude,
+                        timezone: person2LocationData.timezone,
+                        year: person2DateTimeData.year,
+                        month: person2DateTimeData.month,
+                        day: person2DateTimeData.day,
+                        hour: person2DateTimeData.hour,
+                        minute: person2DateTimeData.minute
+                    }
+                };
+
                 const response = await fetch('/api/compare-jadhagam-porutham', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1476,11 +2646,13 @@
 
                 if (result.success) {
                     displayCompatibilityResults(result.data);
+                    showNotification('Compatibility analysis completed!', 'success');
                 } else {
                     showError([result.message || 'An error occurred'], 'compatibility');
                 }
             } catch (error) {
-                showError(['Network error: ' + error.message], 'compatibility');
+                console.error('Compatibility submission error:', error);
+                showError(['Error: ' + error.message], 'compatibility');
             } finally {
                 setLoadingState(false, 'compatibility');
             }
@@ -1489,31 +2661,61 @@
         async function handleBehaviorSubmit(event) {
             event.preventDefault();
 
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData);
-
-            // Convert numeric fields
-            ['year', 'month', 'day', 'hour', 'minute', 'timezone', 'latitude', 'longitude'].forEach(field => {
-                data[field] = parseFloat(data[field]);
-            });
-
             try {
                 setLoadingState(true, 'behavior');
+
+                const formData = new FormData(event.target);
+                const behaviorDateTime = formData.get('behavior-datetime');
+
+                if (!behaviorDateTime) {
+                    throw new Error('Please enter birth date and time');
+                }
+
+                // Get location data
+                const locationData = await getLocationFromSelection('behavior-location');
+
+                // Prepare date/time data
+                const dateTimeData = prepareDateTimeData(behaviorDateTime);
+
+                // Populate hidden fields for API compatibility
+                document.getElementById('behavior-year').value = dateTimeData.year;
+                document.getElementById('behavior-month').value = dateTimeData.month;
+                document.getElementById('behavior-day').value = dateTimeData.day;
+                document.getElementById('behavior-hour').value = dateTimeData.hour;
+                document.getElementById('behavior-minute').value = dateTimeData.minute;
+                document.getElementById('behavior-timezone').value = locationData.timezone;
+                document.getElementById('behavior-latitude').value = locationData.latitude;
+                document.getElementById('behavior-longitude').value = locationData.longitude;
+
+                // Prepare data for API
+                const apiData = {
+                    year: dateTimeData.year,
+                    month: dateTimeData.month,
+                    day: dateTimeData.day,
+                    hour: dateTimeData.hour,
+                    minute: dateTimeData.minute,
+                    timezone: locationData.timezone,
+                    latitude: locationData.latitude,
+                    longitude: locationData.longitude
+                };
+
                 const response = await fetch('/api/behavior', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(apiData)
                 });
 
                 const result = await response.json();
 
                 if (result.success) {
                     displayBehaviorResults(result);
+                    showNotification('Behavior prediction completed!', 'success');
                 } else {
                     showError([result.error || 'An error occurred'], 'behavior');
                 }
             } catch (error) {
-                showError(['Network error: ' + error.message], 'behavior');
+                console.error('Behavior submission error:', error);
+                showError(['Error: ' + error.message], 'behavior');
             } finally {
                 setLoadingState(false, 'behavior');
             }
@@ -1531,68 +2733,68 @@
 
             // Overview tab content
             const overviewContent = `
-                <div class="info-grid">
-                    <div class="info-card">
-                        <div class="info-title"><i class="fas fa-moon"></i> Rashi (Moon Sign)</div>
-                        <div class="info-value">${data.rasi.name} (${data.rasi.english})</div>
-                        <div style="font-size: 0.9rem; color: #666; margin-top: 8px;">
-                            <strong>Lord:</strong> ${data.rasi.lord}<br>
-                            <strong>Element:</strong> ${data.rasi.element}
-                        </div>
-                    </div>
-                    <div class="info-card">
-                        <div class="info-title"><i class="fas fa-star"></i> Nakshatra</div>
-                        <div class="info-value">${data.nakshatra.name}</div>
-                        <div style="font-size: 0.9rem; color: #666; margin-top: 8px;">
-                            <strong>Lord:</strong> ${data.nakshatra.lord}<br>
-                            <strong>Pada:</strong> ${data.nakshatra.pada}
-                        </div>
-                    </div>
-                    <div class="info-card">
-                        <div class="info-title"><i class="fas fa-arrow-up"></i> Lagna (Ascendant)</div>
-                        <div class="info-value">${data.lagna.name} (${data.lagna.english})</div>
-                        <div style="font-size: 0.9rem; color: #666; margin-top: 8px;">
-                            <strong>Lord:</strong> ${data.lagna.lord}<br>
-                            <strong>Element:</strong> ${data.lagna.element}
-                        </div>
-                    </div>
-                    <div class="info-card">
-                        <div class="info-title"><i class="fas fa-compass"></i> Ayanamsa</div>
-                        <div class="info-value">${data.planetaryPositions.ayanamsa}°</div>
-                        <div style="font-size: 0.9rem; color: #666; margin-top: 8px;">
-                            Astronomical calculation reference
-                        </div>
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-title"><i class="fas fa-moon"></i> Rashi (Moon Sign)</div>
+                    <div class="info-value">${data.rasi?.name || 'N/A'} ${data.rasi?.english ? `(${data.rasi.english})` : ''}</div>
+                    <div style="font-size: 0.9rem; color: #666; margin-top: 8px;">
+                        <strong>Lord:</strong> ${data.rasi?.lord || 'N/A'}<br>
+                        <strong>Element:</strong> ${data.rasi?.element || 'N/A'}
                     </div>
                 </div>
-            `;
+                <div class="info-card">
+                    <div class="info-title"><i class="fas fa-star"></i> Nakshatra</div>
+                    <div class="info-value">${data.nakshatra?.name || 'N/A'}</div>
+                    <div style="font-size: 0.9rem; color: #666; margin-top: 8px;">
+                        <strong>Lord:</strong> ${data.nakshatra?.lord || 'N/A'}<br>
+                        <strong>Pada:</strong> ${data.nakshatra?.pada || 'N/A'}
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-title"><i class="fas fa-arrow-up"></i> Lagna (Ascendant)</div>
+                    <div class="info-value">${data.lagna?.name || 'N/A'} ${data.lagna?.english ? `(${data.lagna.english})` : ''}</div>
+                    <div style="font-size: 0.9rem; color: #666; margin-top: 8px;">
+                        <strong>Lord:</strong> ${data.lagna?.lord || 'N/A'}<br>
+                        <strong>Element:</strong> ${data.lagna?.element || 'N/A'}
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-title"><i class="fas fa-compass"></i> Ayanamsa</div>
+                    <div class="info-value">${data.planetaryPositions?.ayanamsa || 'N/A'}°</div>
+                    <div style="font-size: 0.9rem; color: #666; margin-top: 8px;">
+                        Astronomical calculation reference
+                    </div>
+                </div>
+            </div>
+        `;
 
             // Birth Chart tab content
             const birthChartContent = `
-                <div class="chart-card">
-                    <div class="chart-title"><i class="fas fa-chart-pie"></i> Birth Chart (Rashi Chart)</div>
-                    ${generateVedicChart(data.birthChart, 'Birth Chart')}
-                </div>
-            `;
+            <div class="chart-card">
+                <div class="chart-title"><i class="fas fa-chart-pie"></i> Birth Chart (Rashi Chart)</div>
+                ${generateSouthIndianChart(data.birthChart, data.lagna, 'Birth Chart')}
+            </div>
+        `;
 
             // Navamsa Chart tab content
             const navamsaChartContent = `
-                <div class="chart-card">
-                    <div class="chart-title"><i class="fas fa-chart-area"></i> Navamsa Chart (D9)</div>
-                    ${generateVedicChart(data.navamsaChart, 'Navamsa Chart')}
-                </div>
-            `;
+            <div class="chart-card">
+                <div class="chart-title"><i class="fas fa-chart-area"></i> Navamsa Chart (D9)</div>
+                ${generateSouthIndianChart(data.navamsaChart, data.navamsaLagna, 'Navamsa Chart')}
+            </div>
+        `;
 
             // Planetary positions content
             const planetaryContent = `
-                <div class="info-grid">
-                    ${Object.entries(data.planetaryPositions.rawPositions).map(([planet, position]) => `
-                        <div class="info-card">
-                            <div class="info-title"><i class="fas fa-globe"></i> ${planet}</div>
-                            <div class="info-value">${position}°</div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+            <div class="info-grid">
+                ${data.planetaryPositions?.rawPositions ? Object.entries(data.planetaryPositions.rawPositions).map(([planet, position]) => `
+                    <div class="info-card">
+                        <div class="info-title"><i class="fas fa-globe"></i> ${planet}</div>
+                        <div class="info-value">${position}°</div>
+                    </div>
+                `).join('') : '<div class="info-card"><div class="info-title">No planetary data available</div></div>'}
+            </div>
+        `;
 
             // Set tab contents
             setTabContent('overview', overviewContent);
@@ -1600,7 +2802,6 @@
             setTabContent('navamsa-chart', navamsaChartContent);
             setTabContent('planetary', planetaryContent);
 
-            currentResults = data;
             showSection('results');
         }
 
@@ -1615,154 +2816,66 @@
 
             // Compatibility Score content
             const compatibilityContent = `
-                <div class="compatibility-score">
-                    <div class="score-circle">
-                        <div class="score-inner">${data.compatibility.overallPercentage}%</div>
-                    </div>
-                    <h3 style="color: #667eea; font-family: 'Playfair Display', serif; margin-bottom: 10px;">
-                        ${data.compatibility.overallGrade} Match
-                    </h3>
-                    <p style="color: #666; font-size: 1.1rem;">${data.compatibility.recommendationStatus}</p>
+            <div class="compatibility-score">
+                <div class="score-circle">
+                    <div class="score-inner">${data.compatibility?.overallPercentage || 0}%</div>
                 </div>
-               <div class="info-grid">
-    <div class="info-card">
-        <div class="info-title"><i class="fas fa-star"></i> Total Score</div>
-        <div class="info-value">${data.compatibility.totalScore} / ${data.compatibility.maxPossibleScore}</div>
-    </div>
-    ${Object.entries(data.categoryCompatibility || {}).map(([categoryKey, categoryData]) => `
-        <div class="info-card">
-            <div class="info-title"><i class="fas fa-chart-bar"></i> ${categoryData.name}</div>
-            <div class="info-value">${categoryData.percentage}%</div>
-        </div>
-    `).join('')}
-</div>`;
+                <h3 style="color: #667eea; font-family: 'Playfair Display', serif; margin-bottom: 10px;">
+                    ${data.compatibility?.overallGrade || 'Unknown'} Match
+                </h3>
+                <p style="color: #666; font-size: 1.1rem;">${data.compatibility?.recommendationStatus || 'Analysis complete'}</p>
+            </div>
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-title"><i class="fas fa-star"></i> Total Score</div>
+                    <div class="info-value">${data.compatibility?.totalScore || 0} / ${data.compatibility?.maxPossibleScore || 0}</div>
+                </div>
+            </div>
+        `;
 
-            // Before rendering
-            const poruthamsWithCompatible = Object.entries(data.poruthams).map(([name, porutham]) => {
-                return [
-                    name,
-                    {
-                        ...porutham,
-                        compatible: porutham.status === "Excellent" || porutham.status === "Average" // true if favorable
-                    }
-                ];
-            });
+            // Poruthams content
+            const poruthamsContent = data.poruthams ? `
+            <div class="porutham-grid">
+                ${Object.entries(data.poruthams).map(([name, porutham]) => {
+                const compatible = porutham.status === "Excellent" || porutham.status === "Average";
+                return `
+                        <div class="porutham-card">
+                            <div class="porutham-header">
+                                <div class="porutham-name">${porutham.name}</div>
+                                <div class="porutham-status ${compatible ? 'compatible' : 'incompatible'}">
+                                    <i class="fas fa-${compatible ? 'check' : 'times'}"></i>
+                                    ${compatible ? 'Compatible' : 'Not Compatible'}
+                                </div>
+                            </div>
+                            <div style="font-size: 0.9rem; color: #666; margin-top: 12px;">
+                                <i class="fas fa-star"></i> Score: ${porutham.score} / ${porutham.maxScore}
+                            </div>
+                            <div style="font-size: 0.95rem; color: #333; margin-top: 8px; line-height: 1.5;">
+                                ${porutham.description}
+                            </div>
+                        </div>
+                    `;
+            }).join('')}
+            </div>
+        ` : '<div class="info-card"><div class="info-title">No porutham data available</div></div>';
 
-            const poruthamsContent = `
-  <div class="porutham-grid">
-    ${poruthamsWithCompatible.map(([name, porutham]) => `
-      <div class="porutham-card">
-        <div class="porutham-header">
-          <div class="porutham-name">${porutham.name}</div>
-          <div class="porutham-status ${porutham.compatible ? 'compatible' : 'incompatible'}">
-            <i class="fas fa-${porutham.compatible ? 'check' : 'times'}"></i>
-            ${porutham.compatible ? 'Compatible' : 'Not Compatible'}
-          </div>
-        </div>
-        <div style="font-size: 0.9rem; color: #666; margin-top: 12px;">
-          <i class="fas fa-star"></i> Score: ${porutham.score} / ${porutham.maxScore}
-        </div>
-        <div style="font-size: 0.95rem; color: #333; margin-top: 8px; line-height: 1.5;">
-          ${porutham.description}
-        </div>
-      </div>
-    `).join('')}
-  </div>
-`;
-
-            // Build analysis content dynamically
-            const overall = data.analysis.overallAssessment;
-            const marriage = data.analysis.marriageRecommendation;
-            const strengths = data.analysis.strengths;
-            const weaknesses = data.analysis.weaknesses;
-            const remedies = data.analysis.remedialMeasures;
-            const insights = data.analysis.compatibilityInsights;
-
-            const analysisContent = `
-    <div class="info-card" style="margin-bottom: 25px;">
-        <div class="info-title"><i class="fas fa-chart-line"></i> Overall Assessment</div>
-        <div class="info-value" style="line-height: 1.7;">
-            <strong>Rating:</strong> ${overall.rating} (${overall.tamilRating})<br>
-            <strong>Recommendation:</strong> ${overall.recommendation} (${overall.tamilRecommendation})<br>
-            <strong>Description:</strong> ${overall.description}
-        </div>
-    </div>
-
-    <div class="info-card" style="margin-bottom: 25px;">
-        <div class="info-title"><i class="fas fa-ring"></i> Marriage Recommendation</div>
-        <div class="info-value" style="line-height: 1.7;">
-            <strong>Recommendation:</strong> ${marriage.recommendation} (${marriage.tamilRecommendation})<br>
-            <strong>Reason:</strong> ${marriage.reason} (${marriage.tamilReason})<br>
-            <strong>Action:</strong> ${marriage.action}
-        </div>
-    </div>
-
-    <div class="info-card" style="margin-bottom: 25px;">
-        <div class="info-title"><i class="fas fa-check-circle"></i> Strengths</div>
-        <div class="info-value">
-            <ul>
-                ${strengths.map(s => `
-                    <li>
-                        <strong>${s.name} (${s.tamilName})</strong> - 
-                        Score: ${s.score}, ${s.percentage}% <br>
-                        ${s.description}
-                    </li>
-                `).join('')}
-            </ul>
-        </div>
-    </div>
-
-    <div class="info-card" style="margin-bottom: 25px;">
-        <div class="info-title"><i class="fas fa-times-circle"></i> Weaknesses</div>
-        <div class="info-value">
-            <ul>
-                ${weaknesses.map(w => `
-                    <li>
-                        <strong>${w.name} (${w.tamilName})</strong> - 
-                        Score: ${w.score}, ${w.percentage}% <br>
-                        ${w.description}
-                    </li>
-                `).join('')}
-            </ul>
-        </div>
-    </div>
-
-    <div class="info-card" style="margin-bottom: 25px;">
-        <div class="info-title"><i class="fas fa-leaf"></i> Remedies</div>
-        <div class="info-value">
-            ${remedies.map(r => `
-                <strong>${r.dosha} (${r.tamilName})</strong> - Severity: ${r.severity}<br>
-                <u>Remedies:</u>
-                <ul>${r.remedies.map(rem => `<li>${rem}</li>`).join('')}</ul>
-                <u>தமிழ் பரிகாரங்கள்:</u>
-                <ul>${r.tamilRemedies.map(tr => `<li>${tr}</li>`).join('')}</ul>
-            `).join('')}
-        </div>
-    </div>
-
-    <div class="info-card">
-        <div class="info-title"><i class="fas fa-lightbulb"></i> Compatibility Insights</div>
-        <div class="info-value">
-            <ul>
-                ${insights.map(i => `
-                    <li>
-                        <strong>${i.category} (${i.tamilCategory})</strong> - 
-                        Score: ${i.score}<br>
-                        ${i.description} (${i.tamilDescription})
-                    </li>
-                `).join('')}
-            </ul>
-        </div>
-    </div>
-`;
-
+            // Analysis content
+            const analysisContent = data.analysis ? `
+            <div class="info-card" style="margin-bottom: 25px;">
+                <div class="info-title"><i class="fas fa-chart-line"></i> Overall Assessment</div>
+                <div class="info-value" style="line-height: 1.7;">
+                    <strong>Rating:</strong> ${data.analysis.overallAssessment?.rating || 'N/A'}<br>
+                    <strong>Recommendation:</strong> ${data.analysis.overallAssessment?.recommendation || 'N/A'}<br>
+                    <strong>Description:</strong> ${data.analysis.overallAssessment?.description || 'N/A'}
+                </div>
+            </div>
+        ` : '<div class="info-card"><div class="info-title">No analysis data available</div></div>';
 
             // Set tab contents
             setTabContent('compatibility', compatibilityContent);
             setTabContent('poruthams', poruthamsContent);
             setTabContent('analysis', analysisContent);
 
-            currentResults = data;
             showSection('results');
         }
 
@@ -1775,174 +2888,321 @@
 
             showResultsContainer('Behavior Prediction Results', tabs);
 
-            // Helper: render nested object/array into HTML
+            // Helper function to render nested data
             function renderObject(obj) {
                 if (typeof obj !== 'object' || obj === null) {
-                    return obj; // primitive
+                    return obj;
                 }
 
                 if (Array.isArray(obj)) {
-                    return obj.map(v => `<li>${renderObject(v)}</li>`).join('');
+                    return `<ul>${obj.map(v => `<li>${renderObject(v)}</li>`).join('')}</ul>`;
                 }
 
                 return `
-        <ul>
-            ${Object.entries(obj).map(([k, v]) => `
-                <li>
-                    <strong>${k.replace(/([A-Z])/g, ' $1').trim()}:</strong> 
-                    ${typeof v === 'object' ? renderObject(v) : v}
-                </li>
-            `).join('')}
-        </ul>
-    `;
+                <ul>
+                    ${Object.entries(obj).map(([k, v]) => `
+                        <li>
+                            <strong>${k.replace(/([A-Z])/g, ' $1').trim()}:</strong> 
+                            ${typeof v === 'object' ? renderObject(v) : v}
+                        </li>
+                    `).join('')}
+                </ul>
+            `;
             }
 
-            // Extract behavior data
             const behaviorData = data.data || data;
 
-            // Personality content
-            const personalityContent = `
-    <div class="info-grid">
-        ${Object.entries(behaviorData.personality || {}).map(([trait, value]) => `
-            <div class="info-card">
-                <div class="info-title"><i class="fas fa-user-circle"></i> ${trait.replace(/([A-Z])/g, ' $1').trim()}</div>
-                <div class="info-value">${renderObject(value)}</div>
+            const personalityContent = behaviorData.personality ? `
+            <div class="info-grid">
+                ${Object.entries(behaviorData.personality).map(([trait, value]) => `
+                    <div class="info-card">
+                        <div class="info-title"><i class="fas fa-user-circle"></i> ${trait.replace(/([A-Z])/g, ' $1').trim()}</div>
+                        <div class="info-value">${renderObject(value)}</div>
+                    </div>
+                `).join('')}
             </div>
-        `).join('')}
-    </div>
-`;
+        ` : '<div class="info-card"><div class="info-title">No personality data available</div></div>';
 
-            // Behavior content
-            const behaviorContent = `
-    <div class="info-grid">
-        ${Object.entries(behaviorData.behavioral || {}).map(([aspect, value]) => `
-            <div class="info-card">
-                <div class="info-title"><i class="fas fa-brain"></i> ${aspect.replace(/([A-Z])/g, ' $1').trim()}</div>
-                <div class="info-value">${renderObject(value)}</div>
+            const behaviorContent = behaviorData.behavioral ? `
+            <div class="info-grid">
+                ${Object.entries(behaviorData.behavioral).map(([aspect, value]) => `
+                    <div class="info-card">
+                        <div class="info-title"><i class="fas fa-brain"></i> ${aspect.replace(/([A-Z])/g, ' $1').trim()}</div>
+                        <div class="info-value">${renderObject(value)}</div>
+                    </div>
+                `).join('')}
             </div>
-        `).join('')}
-    </div>
-`;
+        ` : '<div class="info-card"><div class="info-title">No behavioral data available</div></div>';
 
-            // Predictions content (future in your JSON)
-            const predictionsContent = `
-    <div class="info-grid">
-        ${Object.entries(behaviorData.future || {}).map(([category, prediction]) => `
-            <div class="info-card">
-                <div class="info-title"><i class="fas fa-crystal-ball"></i> ${category.replace(/([A-Z])/g, ' $1').trim()}</div>
-                <div class="info-value" style="line-height: 1.6;">${renderObject(prediction)}</div>
+            const predictionsContent = behaviorData.future ? `
+            <div class="info-grid">
+                ${Object.entries(behaviorData.future).map(([category, prediction]) => `
+                    <div class="info-card">
+                        <div class="info-title"><i class="fas fa-crystal-ball"></i> ${category.replace(/([A-Z])/g, ' $1').trim()}</div>
+                        <div class="info-value" style="line-height: 1.6;">${renderObject(prediction)}</div>
+                    </div>
+                `).join('')}
             </div>
-        `).join('')}
-    </div>
-`;
+        ` : '<div class="info-card"><div class="info-title">No prediction data available</div></div>';
 
-            // Set tab contents
             setTabContent('personality', personalityContent);
             setTabContent('behavior', behaviorContent);
             setTabContent('predictions', predictionsContent);
-            currentResults = data;
+
             showSection('results');
         }
 
-        function generateVedicChart(chartData, chartType) {
+        // Enhanced South Indian Chart Generation Function
+        function generateSouthIndianChart(chartData, lagnaData, chartType) {
             if (!chartData || typeof chartData !== 'object') {
                 return '<p style="text-align: center; color: #666; padding: 40px;">Chart data not available</p>';
             }
 
-            let houses;
+            console.log('Chart Data:', chartData);
+            console.log('Lagna Data:', lagnaData);
+            console.log('Chart Type:', chartType);
 
-            // Handle different data structures for birth chart and navamsa chart
+            // Initialize arrays
+            let houses = Array(12).fill(null).map(() => ({ planets: [], sign: '', signNumber: null }));
+            let lagnaSignNumber = 1; // Default to Aries
+            let lagnaHouse = 1;
+            let lagnaSign = '';
+
+            // First pass: Extract house data and find Lagna info (but don't force it to position 1)
             if (chartData.houses) {
-                // For the new data structure with detailed house information
-                houses = Array(12).fill(null).map(() => ({ planets: [], sign: '' }));
+                // If houses is an array, use it directly
+                if (Array.isArray(chartData.houses)) {
+                    chartData.houses.forEach((houseData, index) => {
+                        if (index < 12) {
+                            houses[index] = {
+                                planets: houseData.planets || [],
+                                sign: houseData.sign || '',
+                                signNumber: houseData.signNumber || (index + 1)
+                            };
 
-                Object.entries(chartData.houses).forEach(([houseNum, houseData]) => {
-                    const index = parseInt(houseNum) - 1;
-                    if (index >= 0 && index < 12) {
-                        houses[index] = {
-                            planets: houseData.planets || [],
-                            sign: houseData.sign || houseData.signTamil || ''
-                        };
-                    }
-                });
-            } else {
-                // For the old simple structure (fallback)
-                houses = Array(12).fill(null).map(() => ({ planets: [], sign: '' }));
-
-                Object.entries(chartData).forEach(([house, planets]) => {
-                    const houseNum = parseInt(house);
-                    if (houseNum >= 1 && houseNum <= 12) {
-                        if (Array.isArray(planets)) {
-                            houses[houseNum - 1].planets = planets;
-                        } else if (planets && typeof planets === 'string') {
-                            houses[houseNum - 1].planets = planets.split(',').map(p => p.trim());
-                        } else if (planets) {
-                            houses[houseNum - 1].planets = [planets.toString()];
+                            // Find Lagna house and sign number
+                            if (houseData.planets && houseData.planets.includes('Lagna')) {
+                                lagnaHouse = index + 1;
+                                lagnaSignNumber = houseData.signNumber || (index + 1);
+                                lagnaSign = houseData.sign || '';
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    // If houses is an object, convert to array
+                    Object.entries(chartData.houses).forEach(([houseKey, houseData]) => {
+                        const houseNumber = parseInt(houseKey);
+                        const houseIndex = houseNumber - 1;
+
+                        if (houseIndex >= 0 && houseIndex < 12) {
+                            houses[houseIndex] = {
+                                planets: houseData.planets || [],
+                                sign: houseData.sign || '',
+                                signNumber: houseData.signNumber || null
+                            };
+
+                            // Find Lagna house and sign number
+                            if (houseData.planets && houseData.planets.includes('Lagna')) {
+                                lagnaHouse = houseNumber;
+                                lagnaSignNumber = houseData.signNumber || 1;
+                                lagnaSign = houseData.sign || '';
+                            }
+                        }
+                    });
+                }
             }
 
-            // Convert planet names to abbreviations and create planet items
+            // Use the first house's sign number for position 1 (not Lagna)
+            const firstHouseSignNumber = houses[0].signNumber || 1;
+
+            // Convert sign names if needed
+            if (signMapping[lagnaSign]) {
+                lagnaSign = signMapping[lagnaSign];
+            } else if (signNumbers[lagnaSignNumber]) {
+                lagnaSign = signNumbers[lagnaSignNumber];
+            }
+
+            console.log('First House Sign Number:', firstHouseSignNumber);
+            console.log('Lagna House:', lagnaHouse, 'Lagna Sign Number:', lagnaSignNumber, 'Lagna Sign:', lagnaSign);
+
+            // South Indian chart positions (fixed layout)
+            const southIndianPositions = [
+                { position: 1, gridRow: 1, gridCol: 2 },   // Top center-left
+                { position: 2, gridRow: 1, gridCol: 3 },   // Top center-right
+                { position: 3, gridRow: 1, gridCol: 4 },   // Top right
+                { position: 4, gridRow: 2, gridCol: 4 },   // Right center-top
+                { position: 5, gridRow: 3, gridCol: 4 },   // Right center-bottom
+                { position: 6, gridRow: 4, gridCol: 4 },   // Bottom right
+                { position: 7, gridRow: 4, gridCol: 3 },   // Bottom center-right
+                { position: 8, gridRow: 4, gridCol: 2 },   // Bottom center-left
+                { position: 9, gridRow: 4, gridCol: 1 },   // Bottom left
+                { position: 10, gridRow: 3, gridCol: 1 },  // Left center-bottom
+                { position: 11, gridRow: 2, gridCol: 1 },  // Left center-top
+                { position: 12, gridRow: 1, gridCol: 1 }   // Top left
+            ];
+
+            // Calculate sign-to-position mapping based on first house sign
+            // The first house sign should appear in position 1
+            const signToPosition = {};
+            for (let i = 0; i < 12; i++) {
+                let signNum = ((firstHouseSignNumber - 1 + i) % 12) + 1;
+                signToPosition[signNum] = i + 1; // Position 1-12
+            }
+
+            console.log('Sign to Position mapping:', signToPosition);
+
+            // Create position data array where index = position-1
+            const positionData = Array(12).fill(null).map(() => ({
+                planets: [],
+                sign: '',
+                signNumber: null,
+                houseNumber: null
+            }));
+
+            // Map houses to positions based on their sign numbers
+            houses.forEach((houseData, houseIndex) => {
+                const houseNumber = houseIndex + 1;
+                const signNumber = houseData.signNumber;
+
+                if (signNumber && signToPosition[signNumber]) {
+                    const position = signToPosition[signNumber];
+                    const positionIndex = position - 1;
+
+                    if (positionIndex >= 0 && positionIndex < 12) {
+                        positionData[positionIndex] = {
+                            planets: houseData.planets,
+                            sign: houseData.sign,
+                            signNumber: signNumber,
+                            houseNumber: houseNumber
+                        };
+                    }
+                }
+            });
+
+            console.log('Position Data:', positionData);
+
             const createPlanetItems = (planetList) => {
                 if (!planetList || planetList.length === 0) return '';
-
                 return planetList.map(planet => {
                     const cleanPlanet = planet.trim();
                     const abbr = planetAbbreviations[cleanPlanet] || cleanPlanet.substring(0, 2);
-                    return `<div class="planet-item">${abbr}</div>`;
+                    // Add special styling for Lagna
+                    const isLagna = cleanPlanet === 'Lagna';
+                    return `<div class="planet-item ${isLagna ? 'lagna-planet' : ''}">${abbr}</div>`;
                 }).join('');
             };
 
+            // Get sign name for display
+            const getSignName = (signName, signNumber) => {
+                if (signMapping[signName]) {
+                    return signMapping[signName];
+                }
+                if (signNumbers[signNumber]) {
+                    return signNumbers[signNumber];
+                }
+                return signName || 'Unknown';
+            };
+
+            // Determine center text based on chart type
+            let centerTitle, centerValue, centerEnglish;
+            if (chartType === 'Navamsa Chart') {
+                centerTitle = '';
+                centerValue = '';
+                centerEnglish = 'Navamsa Chart';
+            } else {
+                centerTitle = '';
+                centerValue = '';
+                centerEnglish = 'Rasi Chart';
+            }
+
             const chartHtml = `
-                <div class="vedic-chart">
-                    ${Array.from({ length: 12 }, (_, i) => {
-                const houseNum = i + 1;
+        <div class="south-indian-chart">
+            ${southIndianPositions.map((pos) => {
+                const positionIndex = pos.position - 1;
+                const data = positionData[positionIndex];
+                const hasLagna = data.planets?.includes('Lagna');
+                const displaySignName = getSignName(data.sign, data.signNumber);
+
                 return `
-                            <div class="chart-house house-${houseNum}" title="House ${houseNum}: ${houses[i].sign}">
-                                <div class="house-number">${houseNum}</div>
-                                <div class="planet-list">${createPlanetItems(houses[i].planets)}</div>
-                                <div class="sign-name">${houses[i].sign}</div>
-                            </div>
-                        `;
-            }).join('')}
-                </div>
-                <div class="chart-legend">
-                    <div style="margin-bottom: 15px; font-weight: 600; color: #667eea; text-align: center;">
-                        <i class="fas fa-info-circle"></i> Planet Abbreviations
+                    <div class="chart-house position-${pos.position} ${hasLagna ? 'has-lagna' : ''}" 
+                         style="grid-row: ${pos.gridRow}; grid-column: ${pos.gridCol};"
+                         title="Position ${pos.position}: ${displaySignName} (House ${data.houseNumber || 'N/A'}) - Planets: ${data.planets?.join(', ') || 'None'}">
+                        <div class="house-number">${data.houseNumber || '?'}</div>
+                        <div class="planet-list">${createPlanetItems(data.planets)}</div>
+                        <div class="sign-name">${displaySignName}</div>
                     </div>
-                    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;">
-                        ${Object.entries(planetAbbreviations).map(([planet, abbr]) =>
+                `;
+            }).join('')}
+            
+            <div class="chart-center" style="grid-row: 2 / 4; grid-column: 2 / 4;">
+                <div class="center-english">${centerEnglish}</div>
+                <div class="center-title" style="margin-top: 10px;">लग्न</div>
+            </div>
+        </div>
+        <div class="chart-legend">
+            <div style="margin-bottom: 15px; font-weight: 600; color: #667eea; text-align: center;">
+                <i class="fas fa-info-circle"></i> Planet Abbreviations
+            </div>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;">
+                ${Object.entries(planetAbbreviations).map(([planet, abbr]) =>
                 `<span class="legend-item"><span class="planet-abbr">${abbr}</span> = ${planet}</span>`
             ).join('')}
-                    </div>
-                </div>
-            `;
+            </div>
+            <div style="margin-top: 10px; font-size: 11px; color: #888; text-align: center;">
+                <i class="fas fa-star"></i> Lagna (${lagnaSign}) is in Position ${signToPosition[lagnaSignNumber] || '?'}, Sign Number ${lagnaSignNumber}
+            </div>
+        </div>
+
+        <style>
+            /* Special styling for Lagna planet */
+            .planet-item.lagna-planet {
+                background-color: #ff6b35 !important;
+                color: white !important;
+                font-weight: bold !important;
+                border: 2px solid #ff4500 !important;
+                box-shadow: 0 0 8px rgba(255, 107, 53, 0.6) !important;
+            }
+
+            /* Special styling for houses containing Lagna */
+            .chart-house.has-lagna {
+                border: 2px solid #ff6b35 !important;
+                background-color: rgba(255, 107, 53, 0.1) !important;
+            }
+
+            /* Default planet styling */
+            .planet-item {
+                background-color: #667eea;
+                color: white;
+                padding: 2px 4px;
+                border-radius: 3px;
+                font-size: 10px;
+                margin: 1px;
+                font-weight: 500;
+                border: 1px solid #5a67d8;
+            }
+        </style>
+    `;
 
             return chartHtml;
         }
 
         function showResultsContainer(title, tabs) {
-            // Show results container
             document.getElementById('result-title').textContent = title;
 
-            // Generate tabs
             const tabsContainer = document.getElementById('result-tabs');
             tabsContainer.innerHTML = tabs.map((tab, index) => `
-                <button class="tab-btn ${index === 0 ? 'active' : ''}" data-tab="${tab.id}">
-                    <i class="${tab.icon}"></i> ${tab.name}
-                </button>
-            `).join('');
+            <button class="tab-btn ${index === 0 ? 'active' : ''}" data-tab="${tab.id}">
+                <i class="${tab.icon}"></i> ${tab.name}
+            </button>
+        `).join('');
 
-            // Generate tab content containers
             const contentContainer = document.getElementById('result-content');
             contentContainer.innerHTML = tabs.map((tab, index) => `
-                <div id="tab-${tab.id}" class="tab-content ${index === 0 ? 'active' : ''}">
-                    <!-- Content will be set by specific display functions -->
-                </div>
-            `).join('');
+            <div id="tab-${tab.id}" class="tab-content ${index === 0 ? 'active' : ''}">
+                <!-- Content will be set by specific display functions -->
+            </div>
+        `).join('');
 
-            // Add tab click listeners
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', function () {
                     const tabId = this.dataset.tab;
@@ -1952,7 +3212,6 @@
         }
 
         function showTab(tabId) {
-            // Update tab buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.dataset.tab === tabId) {
@@ -1960,7 +3219,6 @@
                 }
             });
 
-            // Update tab content
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
@@ -1979,7 +3237,7 @@
         }
 
         function setLoadingState(loading, formType) {
-            const form = document.getElementById(`${formType}-form`) || document.querySelector(`#${formType}-section form`);
+            const form = document.getElementById(`${formType}-form`);
             if (!form) return;
 
             const button = form.querySelector('.btn-primary');
@@ -1996,7 +3254,6 @@
                 spinner.style.display = 'none';
                 button.style.background = 'var(--primary-gradient)';
 
-                // Reset button text based on form type
                 const originalTexts = {
                     'birth-chart': 'Analyze Birth Chart',
                     'compatibility': 'Analyze Compatibility',
@@ -2008,28 +3265,24 @@
 
         function showError(errors, formType) {
             const errorHtml = `
-                <div class="error-message">
-                    <h4><i class="fas fa-exclamation-triangle"></i> Error Occurred</h4>
-                    <ul style="margin-top: 15px; padding-left: 20px;">
-                        ${errors.map(error => `<li style="margin-bottom: 5px;">${error}</li>`).join('')}
-                    </ul>
-                </div>
-            `;
+            <div class="error-message">
+                <h4><i class="fas fa-exclamation-triangle"></i> Error Occurred</h4>
+                <ul style="margin-top: 15px; padding-left: 20px;">
+                    ${errors.map(error => `<li style="margin-bottom: 5px;">${error}</li>`).join('')}
+                </ul>
+            </div>
+        `;
 
-            // Show error in the current active form
             const activeForm = document.getElementById(`${formType}-section`);
             if (activeForm) {
-                // Remove existing errors
                 const existingError = activeForm.querySelector('.error-message');
                 if (existingError) {
                     existingError.remove();
                 }
 
-                // Add new error after the form
                 const form = activeForm.querySelector('form');
                 form.insertAdjacentHTML('afterend', errorHtml);
 
-                // Auto-remove error after 10 seconds
                 setTimeout(() => {
                     const errorElement = activeForm.querySelector('.error-message');
                     if (errorElement) {
@@ -2040,33 +3293,7 @@
             }
         }
 
-        // Add CSS animation for fadeOut
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeOut {
-                from { opacity: 1; transform: translateY(0); }
-                to { opacity: 0; transform: translateY(-10px); }
-            }
-        `;
-        document.head.appendChild(style);
-
         // Utility functions
-        function formatDate(dateString) {
-            return new Date(dateString).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-        }
-
-        function formatTime(timeString) {
-            return new Date(`1970-01-01T${timeString}`).toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-
-        // Add smooth scrolling for better UX
         function smoothScrollToTop() {
             window.scrollTo({
                 top: 0,
@@ -2074,52 +3301,31 @@
             });
         }
 
-        // Call smooth scroll when switching sections
+        // Enhanced showSection with smooth scroll
         const originalShowSection = showSection;
         showSection = function (sectionName) {
             originalShowSection(sectionName);
             smoothScrollToTop();
         };
 
-        // Add keyboard navigation
+        // Keyboard navigation
         document.addEventListener('keydown', function (event) {
             if (event.key === 'Escape') {
-                showSection('services');
-            }
-        });
-
-        // Add touch/swipe support for mobile
-        let startX = null;
-        let startY = null;
-
-        document.addEventListener('touchstart', function (event) {
-            startX = event.touches[0].clientX;
-            startY = event.touches[0].clientY;
-        });
-
-        document.addEventListener('touchend', function (event) {
-            if (!startX || !startY) return;
-
-            const endX = event.changedTouches[0].clientX;
-            const endY = event.changedTouches[0].clientY;
-            const diffX = startX - endX;
-            const diffY = startY - endY;
-
-            // Only trigger swipe if horizontal movement is greater than vertical
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-                if (diffX > 0) {
-                    // Swipe left - could trigger next section
-                } else {
-                    // Swipe right - could trigger previous section or back to services
-                    if (currentSection !== 'services') {
-                        showSection('services');
-                    }
+                if (currentSection !== 'services') {
+                    showSection('services');
                 }
             }
-
-            startX = null;
-            startY = null;
         });
+
+        // Additional CSS for fadeOut animation
+        const fadeOutStyle = document.createElement('style');
+        fadeOutStyle.textContent = `
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+    `;
+        document.head.appendChild(fadeOutStyle);
     </script>
 </body>
 
