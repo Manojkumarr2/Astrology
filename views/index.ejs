@@ -619,6 +619,16 @@
             gap: 12px;
         }
 
+        /* Form Action Buttons */
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
         /* Enhanced Button */
         .btn-primary {
             background: var(--primary-gradient);
@@ -634,7 +644,6 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
-            margin: 30px auto;
             min-width: 220px;
             font-family: 'Inter', sans-serif;
             letter-spacing: 0.5px;
@@ -667,6 +676,51 @@
             opacity: 0.7;
             cursor: not-allowed;
             transform: none;
+        }
+
+        /* Clear Button */
+        .btn-clear {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #495057;
+            border: 2px solid #dee2e6;
+            padding: 18px 30px;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-width: 160px;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-clear::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-clear:hover::before {
+            left: 100%;
+        }
+
+        .btn-clear:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            border-color: #667eea;
+            color: #667eea;
         }
 
         .back-btn {
@@ -1381,6 +1435,14 @@
                 padding: 6px 12px;
                 font-size: 12px;
             }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn-primary, .btn-clear {
+                min-width: 200px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1480,6 +1542,25 @@
             75% {
                 transform: translateX(5px);
             }
+        }
+
+        /* Success Message */
+        .success-message {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 25px 0;
+            border: 1px solid #c3e6cb;
+            animation: slideInUp 0.5s ease-in-out;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .success-message i {
+            font-size: 1.2rem;
+            color: #28a745;
         }
 
         /* Chart Legend */
@@ -1685,7 +1766,7 @@
             </div>
             <div class="nav-pill" data-section="behavior">
                 <i class="fas fa-brain"></i> Behavior
-            </div>
+                            </div>
         </div>
 
         <!-- Services Grid -->
@@ -1784,11 +1865,17 @@
                 <input type="hidden" id="birth-latitude" name="latitude">
                 <input type="hidden" id="birth-longitude" name="longitude">
 
-                <button type="submit" class="btn-primary">
-                    <span class="btn-text">Analyze Birth Chart</span>
-                    <div class="loading-spinner"></div>
-                    <i class="fas fa-magic"></i>
-                </button>
+                <div class="form-actions">
+                    <button type="button" class="btn-clear" onclick="clearForm('birth-chart')">
+                        <i class="fas fa-eraser"></i>
+                        <span class="btn-text">Clear Form</span>
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <span class="btn-text">Analyze Birth Chart</span>
+                        <div class="loading-spinner"></div>
+                        <i class="fas fa-magic"></i>
+                    </button>
+                </div>
             </form>
         </div>
 
@@ -1921,11 +2008,17 @@
                 <input type="hidden" id="person2-latitude" name="person2-latitude">
                 <input type="hidden" id="person2-longitude" name="person2-longitude">
 
-                <button type="submit" class="btn-primary">
-                    <span class="btn-text">Analyze Compatibility</span>
-                    <div class="loading-spinner"></div>
-                    <i class="fas fa-heart"></i>
-                </button>
+                <div class="form-actions">
+                    <button type="button" class="btn-clear" onclick="clearForm('compatibility')">
+                        <i class="fas fa-eraser"></i>
+                        <span class="btn-text">Clear Form</span>
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <span class="btn-text">Analyze Compatibility</span>
+                        <div class="loading-spinner"></div>
+                        <i class="fas fa-heart"></i>
+                    </button>
+                </div>
             </form>
         </div>
 
@@ -1977,11 +2070,17 @@
                 <input type="hidden" id="behavior-latitude" name="latitude">
                 <input type="hidden" id="behavior-longitude" name="longitude">
 
-                <button type="submit" class="btn-primary">
-                    <span class="btn-text">Predict Behavior</span>
-                    <div class="loading-spinner"></div>
-                    <i class="fas fa-brain"></i>
-                </button>
+                <div class="form-actions">
+                    <button type="button" class="btn-clear" onclick="clearForm('behavior')">
+                        <i class="fas fa-eraser"></i>
+                        <span class="btn-text">Clear Form</span>
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <span class="btn-text">Predict Behavior</span>
+                        <div class="loading-spinner"></div>
+                        <i class="fas fa-brain"></i>
+                    </button>
+                </div>
             </form>
         </div>
 
@@ -2156,7 +2255,6 @@
                 try {
                     this.showLoading();
 
-
                     let birthDate = null;
                     const prefix = this.inputId.replace('-location', '');
                     const dateTimeInput = document.getElementById(`${prefix}-datetime`);
@@ -2211,7 +2309,7 @@
                      data-name="${location.name}"
                      data-lat="${location.latitude}"
                      data-lng="${location.longitude}"
-                     data-timezone="${location.timezone || 5.5}">
+                     data-timezone="${location.timezone || 0}">
                     <div class="suggestion-name">${location.name}</div>
                     <div class="suggestion-details">
                         ${location.region ? location.region + ', ' : ''}${location.country || ''}
@@ -2264,7 +2362,9 @@
                 const name = suggestionElement.dataset.name;
                 const lat = parseFloat(suggestionElement.dataset.lat);
                 const lng = parseFloat(suggestionElement.dataset.lng);
-                const timezone = parseFloat(suggestionElement.dataset.timezone);
+
+                console.log("suggestionElement", suggestionElement.dataset)
+                const timezone = suggestionElement.dataset.timezone;
                 const isManual = suggestionElement.dataset.manual === 'true';
 
                 this.input.value = name;
@@ -2275,6 +2375,8 @@
                     timezone: timezone,
                     isManual: isManual
                 };
+
+                console.log("Location data:", this.locationData);
 
                 this.updateLocationInfo();
                 selectedLocations.set(this.inputId, this.locationData);
@@ -2340,6 +2442,13 @@
 
             getLocationData() {
                 return this.locationData;
+            }
+
+            clear() {
+                this.input.value = '';
+                this.currentQuery = '';
+                this.clearLocationData();
+                this.hideSuggestions();
             }
         }
 
@@ -2432,6 +2541,83 @@
         }
     `;
         document.head.appendChild(notificationStyle);
+
+        // Form clearing function
+        function clearForm(formType) {
+            const form = document.getElementById(`${formType}-form`);
+            if (!form) return;
+
+            // Clear all visible inputs in the form
+            const inputs = form.querySelectorAll('input[type="text"], input[type="datetime-local"], select');
+            inputs.forEach(input => {
+                input.value = '';
+                input.classList.remove('error');
+            });
+
+            // Clear all hidden inputs
+            const hiddenInputs = form.querySelectorAll('input[type="hidden"]');
+            hiddenInputs.forEach(input => {
+                input.value = '';
+            });
+
+            // Clear location autocomplete instances
+            const locationInputs = form.querySelectorAll('.location-input');
+            locationInputs.forEach(input => {
+                const autocomplete = locationInstances.get(input.id);
+                if (autocomplete) {
+                    autocomplete.clear();
+                }
+            });
+
+            // Clear all location info displays
+            const locationInfos = form.querySelectorAll('.location-info');
+            locationInfos.forEach(info => {
+                info.classList.remove('show');
+            });
+
+            // Remove any error messages
+            const errorMessages = form.querySelectorAll('.error-message');
+            errorMessages.forEach(error => error.remove());
+
+            // Remove any success messages
+            const successMessages = form.querySelectorAll('.success-message');
+            successMessages.forEach(success => success.remove());
+
+            // Show success message
+            showClearMessage(form);
+            showNotification('Form cleared successfully!', 'success');
+
+            // Scroll to top of form
+            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function showClearMessage(form) {
+            const existingMessage = form.querySelector('.success-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            const message = document.createElement('div');
+            message.className = 'success-message';
+            message.innerHTML = `
+            <i class="fas fa-check-circle"></i>
+            <span>Form has been cleared successfully. You can now enter new information.</span>
+        `;
+
+            // Insert after form title
+            const formTitle = form.querySelector('.form-title');
+            if (formTitle) {
+                formTitle.insertAdjacentElement('afterend', message);
+            }
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (message.parentNode) {
+                    message.style.animation = 'fadeOut 0.5s ease';
+                    setTimeout(() => message.remove(), 500);
+                }
+            }, 5000);
+        }
 
         async function getLocationFromSelection(inputId) {
             const autocomplete = locationInstances.get(inputId);
@@ -2997,7 +3183,7 @@
                         if (houseIndex >= 0 && houseIndex < 12) {
                             houses[houseIndex] = {
                                 planets: houseData.planets || [],
-                                sign: houseData.sign || '',
+                                                                sign: houseData.sign || '',
                                 signNumber: houseData.signNumber || null
                             };
 
@@ -3317,15 +3503,405 @@
             }
         });
 
-        // Additional CSS for fadeOut animation
-        const fadeOutStyle = document.createElement('style');
-        fadeOutStyle.textContent = `
+        // Keyboard shortcuts for form clearing (Ctrl+R for reset)
+        document.addEventListener('keydown', function (event) {
+            if (event.ctrlKey && event.key === 'r' && !event.shiftKey) {
+                event.preventDefault();
+                const currentForm = document.querySelector('.form-section.active');
+                if (currentForm) {
+                    const formId = currentForm.id.replace('-section', '');
+                    clearForm(formId);
+                    showNotification('Form cleared with Ctrl+R shortcut!', 'success');
+                }
+            }
+        });
+
+        // Auto-save form data to localStorage (optional feature)
+        function autoSaveForm(formType) {
+            const form = document.getElementById(`${formType}-form`);
+            if (!form) return;
+
+            const formData = new FormData(form);
+            const data = {};
+            
+            for (let [key, value] of formData.entries()) {
+                if (value.trim() !== '') {
+                    data[key] = value;
+                }
+            }
+
+            if (Object.keys(data).length > 0) {
+                localStorage.setItem(`astrology_${formType}_data`, JSON.stringify(data));
+            }
+        }
+
+        // Load saved form data from localStorage
+        function loadSavedFormData(formType) {
+            const savedData = localStorage.getItem(`astrology_${formType}_data`);
+            if (!savedData) return;
+
+            try {
+                const data = JSON.parse(savedData);
+                const form = document.getElementById(`${formType}-form`);
+                
+                Object.entries(data).forEach(([key, value]) => {
+                    const input = form.querySelector(`[name="${key}"]`);
+                    if (input && input.type !== 'hidden') {
+                        input.value = value;
+                    }
+                });
+
+                showNotification('Previous form data restored!', 'success');
+            } catch (error) {
+                console.error('Error loading saved form data:', error);
+            }
+        }
+
+        // Clear saved form data
+        function clearSavedFormData(formType) {
+            localStorage.removeItem(`astrology_${formType}_data`);
+        }
+
+        // Enhanced clear form function with confirmation
+        function clearFormWithConfirmation(formType) {
+            const form = document.getElementById(`${formType}-form`);
+            if (!form) return;
+
+            // Check if form has data
+            const hasData = Array.from(form.querySelectorAll('input[type="text"], input[type="datetime-local"], select'))
+                .some(input => input.value.trim() !== '');
+
+            if (hasData) {
+                if (confirm('Are you sure you want to clear all form data? This action cannot be undone.')) {
+                    clearForm(formType);
+                    clearSavedFormData(formType);
+                }
+            } else {
+                showNotification('Form is already empty!', 'error');
+            }
+        }
+
+        // Add double-click to clear functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.btn-clear').forEach(btn => {
+                let clickCount = 0;
+                btn.addEventListener('click', function(e) {
+                    clickCount++;
+                    if (clickCount === 1) {
+                        setTimeout(() => {
+                            if (clickCount === 1) {
+                                // Single click - normal clear
+                                const formType = this.closest('form').id.replace('-form', '');
+                                clearForm(formType);
+                            } else if (clickCount === 2) {
+                                // Double click - clear with confirmation
+                                const formType = this.closest('form').id.replace('-form', '');
+                                clearFormWithConfirmation(formType);
+                            }
+                            clickCount = 0;
+                        }, 300);
+                    }
+                });
+            });
+        });
+
+        // Form validation enhancement
+        function validateForm(formType) {
+            const form = document.getElementById(`${formType}-form`);
+            const errors = [];
+
+            // Common validation for all forms
+            const requiredInputs = form.querySelectorAll('input[required], select[required]');
+            requiredInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    errors.push(`${input.previousElementSibling.textContent.replace(/[^\w\s]/gi, '').trim()} is required`);
+                    input.classList.add('error');
+                } else {
+                    input.classList.remove('error');
+                }
+            });
+
+            // Specific validation for compatibility form
+            if (formType === 'compatibility') {
+                const person1DateTime = document.getElementById('person1-datetime').value;
+                const person2DateTime = document.getElementById('person2-datetime').value;
+
+                if (person1DateTime && person2DateTime) {
+                    const date1 = new Date(person1DateTime);
+                    const date2 = new Date(person2DateTime);
+                    const ageDiff = Math.abs(date1 - date2) / (1000 * 60 * 60 * 24 * 365.25);
+
+                    if (ageDiff > 50) {
+                        errors.push('Age difference between persons is very large (>50 years). Please verify the dates.');
+                    }
+                }
+            }
+
+            // Date validation
+            const dateInputs = form.querySelectorAll('input[type="datetime-local"]');
+            dateInputs.forEach(input => {
+                if (input.value) {
+                    const inputDate = new Date(input.value);
+                    const now = new Date();
+                    const hundredYearsAgo = new Date(now.getFullYear() - 100, now.getMonth(), now.getDate());
+
+                    if (inputDate > now) {
+                        errors.push('Birth date cannot be in the future');
+                        input.classList.add('error');
+                    } else if (inputDate < hundredYearsAgo) {
+                        errors.push('Birth date cannot be more than 100 years ago');
+                        input.classList.add('error');
+                    } else {
+                        input.classList.remove('error');
+                    }
+                }
+            });
+
+            return errors;
+        }
+
+        // Enhanced form submission with validation
+        function enhancedFormSubmit(event, submitHandler) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formType = form.id.replace('-form', '');
+            
+            // Validate form
+            const validationErrors = validateForm(formType);
+            if (validationErrors.length > 0) {
+                showError(validationErrors, formType);
+                return;
+            }
+
+            // Auto-save before submission
+            autoSaveForm(formType);
+
+            // Call original submit handler
+            return submitHandler(event);
+        }
+
+        // Override original form handlers with enhanced versions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Replace form event listeners with enhanced versions
+            const birthChartForm = document.getElementById('birth-chart-form');
+            const compatibilityForm = document.getElementById('compatibility-form');
+            const behaviorForm = document.getElementById('behavior-form');
+
+            if (birthChartForm) {
+                birthChartForm.removeEventListener('submit', handleBirthChartSubmit);
+                birthChartForm.addEventListener('submit', (e) => enhancedFormSubmit(e, handleBirthChartSubmit));
+            }
+
+            if (compatibilityForm) {
+                compatibilityForm.removeEventListener('submit', handleCompatibilitySubmit);
+                compatibilityForm.addEventListener('submit', (e) => enhancedFormSubmit(e, handleCompatibilitySubmit));
+            }
+
+            if (behaviorForm) {
+                behaviorForm.removeEventListener('submit', handleBehaviorSubmit);
+                behaviorForm.addEventListener('submit', (e) => enhancedFormSubmit(e, handleBehaviorSubmit));
+            }
+        });
+
+        // Additional CSS for enhanced form validation
+        const validationStyle = document.createElement('style');
+        validationStyle.textContent = `
         @keyframes fadeOut {
             from { opacity: 1; transform: translateY(0); }
             to { opacity: 0; transform: translateY(-10px); }
         }
+
+        .form-group input.error,
+        .form-group select.error {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.1) !important;
+            background-color: rgba(220, 53, 69, 0.05) !important;
+        }
+
+        .form-group input.error:focus,
+        .form-group select.error:focus {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.2) !important;
+        }
+
+        /* Enhanced clear button with hover effect */
+        .btn-clear:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Tooltip for double-click hint */
+        .btn-clear::after {
+            content: 'Single click: Clear | Double click: Clear with confirmation';
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .btn-clear:hover::after {
+            opacity: 1;
+        }
+
+        /* Loading state for clear button */
+        .btn-clear.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-clear.loading::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(0, 0, 0, 0.3);
+            border-top: 2px solid #495057;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Form section animations */
+        .form-section.clearing {
+            animation: formClear 0.5s ease-in-out;
+        }
+
+        @keyframes formClear {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.98); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Success animation for cleared forms */
+        .form-cleared {
+            animation: successPulse 0.6s ease-in-out;
+        }
+
+        @keyframes successPulse {
+            0% { background-color: rgba(255, 255, 255, 0.95); }
+            50% { background-color: rgba(212, 237, 218, 0.3); }
+            100% { background-color: rgba(255, 255, 255, 0.95); }
+        }
     `;
-        document.head.appendChild(fadeOutStyle);
+        document.head.appendChild(validationStyle);
+
+        // Global error handler for uncaught errors
+        window.addEventListener('error', function(event) {
+            console.error('Global error:', event.error);
+            showNotification('An unexpected error occurred. Please try again.', 'error');
+        });
+
+        // Global handler for unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('Unhandled promise rejection:', event.reason);
+            showNotification('A network or processing error occurred. Please check your connection and try again.', 'error');
+        });
+
+        // Clear all forms function (accessible globally)
+        window.clearAllForms = function() {
+            if (confirm('Are you sure you want to clear ALL forms? This will remove all entered data.')) {
+                ['birth-chart', 'compatibility', 'behavior'].forEach(formType => {
+                    clearForm(formType);
+                    clearSavedFormData(formType);
+                });
+                showNotification('All forms cleared successfully!', 'success');
+            }
+        };
+
+        // Export form data function
+        window.exportFormData = function(formType) {
+            const form = document.getElementById(`${formType}-form`);
+            if (!form) return;
+
+            const formData = new FormData(form);
+            const data = {};
+            
+            for (let [key, value] of formData.entries()) {
+                if (value.trim() !== '' && !key.includes('year') && !key.includes('month') && !key.includes('day') && !key.includes('hour') && !key.includes('minute') && !key.includes('timezone') && !key.includes('latitude') && !key.includes('longitude')) {
+                    data[key] = value;
+                }
+            }
+
+            if (Object.keys(data).length === 0) {
+                showNotification('No data to export!', 'error');
+                return;
+            }
+
+            const exportData = {
+                formType: formType,
+                data: data,
+                exportedAt: new Date().toISOString(),
+                exportedBy: 'vikramNplus'
+            };
+
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `astrology_${formType}_data_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showNotification('Form data exported successfully!', 'success');
+        };
+
+        // Import form data function
+        window.importFormData = function(formType) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importData = JSON.parse(e.target.result);
+                        
+                        if (importData.formType !== formType) {
+                            showNotification('Invalid file: Form type mismatch!', 'error');
+                            return;
+                        }
+
+                        const form = document.getElementById(`${formType}-form`);
+                        Object.entries(importData.data).forEach(([key, value]) => {
+                            const input = form.querySelector(`[name="${key}"]`);
+                            if (input && input.type !== 'hidden') {
+                                input.value = value;
+                            }
+                        });
+
+                        showNotification('Form data imported successfully!', 'success');
+                    } catch (error) {
+                        showNotification('Error importing file: Invalid JSON format!', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        };
+
+        console.log('CKC Astrology Portal initialized successfully!');
+        console.log('Available functions: clearAllForms(), exportFormData(formType), importFormData(formType)');
+        console.log('Current user:', 'vikramNplus');
+        console.log('Form clearing shortcuts: Ctrl+R (current form), clearAllForms() (all forms)');
     </script>
 </body>
 

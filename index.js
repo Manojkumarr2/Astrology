@@ -7,6 +7,10 @@ const bodyParser = require('body-parser');
 const NodeCache = require('node-cache');
 const rateLimit = require('express-rate-limit');
 const axios = require('axios');
+const Astronomy = require('astronomy-engine');
+const { getAstrologyData } = require('./utils/timeZoneUtils');
+
+const tzlookup = require('tz-lookup');
 
 const { ImprovedNavamsaChart } = require('./utils/navamsachart'); // Assuming navamsa.js is in the same directory
 
@@ -80,11 +84,6 @@ app.use(helmet());
 app.use(cors());
 app.use(morgan('combined'));
 app.use(express.json());
-
-// Vedic Astrology Data
-
-// Utility Functions
-
 
 
 // Main calculation endpoint
@@ -582,506 +581,12 @@ app.post('/api/behavior', async (req, res) => {
     }
 });
 
-
-// Get all countries
-app.get('/api/countries', (req, res) => {
-    try {
-        const countries = Country.getAllCountries();
-        const formattedCountries = countries.map(country => ({
-            id: country.isoCode,
-            name: country.name,
-            code: country.isoCode
-        }));
-        res.json(formattedCountries);
-    } catch (error) {
-        console.error('Error fetching countries:', error);
-        res.status(500).json({ error: 'Failed to fetch countries' });
-    }
-});
-
-// Get states by country
-app.get('/api/states/:countryId', (req, res) => {
-    try {
-        const { countryId } = req.params;
-        const states = State.getStatesOfCountry(countryId);
-        const formattedStates = states.map(state => ({
-            id: state.isoCode,
-            name: state.name,
-            code: state.isoCode,
-            countryCode: state.countryCode
-        }));
-        res.json(formattedStates);
-    } catch (error) {
-        console.error('Error fetching states:', error);
-        res.status(500).json({ error: 'Failed to fetch states' });
-    }
-});
-
-// Get cities by state
-app.get('/api/cities/:stateId/:countryId', (req, res) => {
-    try {
-        const { stateId, countryId } = req.params;
-
-        console.log('Fetching cities for state:', stateId, 'in country:', countryId);
-        const cities = City.getCitiesOfState(countryId, stateId);
-        const formattedCities = cities.map(city => ({
-            id: city.name,
-            name: city.name,
-            latitude: parseFloat(city.latitude) || 0,
-            longitude: parseFloat(city.longitude) || 0,
-            stateCode: city.stateCode,
-            countryCode: city.countryCode
-        }));
-        res.json(formattedCities);
-    } catch (error) {
-        console.error('Error fetching cities:', error);
-        res.status(500).json({ error: 'Failed to fetch cities' });
-    }
-});
-
-// Geocoding endpoint for manual location input
-app.get('/api/geocode', async (req, res) => {
-    try {
-        const { location } = req.query;
-        const fetch = require('node-fetch'); // You may need to install: npm install node-fetch@2
-
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1`;
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (data && data.length > 0) {
-            const result = data[0];
-            const latitude = parseFloat(result.lat);
-            const longitude = parseFloat(result.lon);
-
-            // Get timezone
-            const timezone = getTimezoneFromCoords(latitude, longitude);
-
-            res.json({
-                success: true,
-                coordinates: { latitude, longitude },
-                timezone: timezone,
-                address: result.display_name
-            });
-        } else {
-            res.json({
-                success: false,
-                error: 'Location not found'
-            });
-        }
-    } catch (error) {
-        console.error('Geocoding error:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Geocoding service error'
-        });
-    }
-});
-
-// Reverse geocoding endpoint for current location
-app.get('/api/reverse-geocode', async (req, res) => {
-    try {
-        const { lat, lng } = req.query;
-        const fetch = require('node-fetch');
-
-        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (data && data.address) {
-            const address = data.address;
-            const timezone = getTimezoneFromCoords(parseFloat(lat), parseFloat(lng));
-
-            res.json({
-                success: true,
-                location: {
-                    country: address.country || '',
-                    state: address.state || address.region || '',
-                    city: address.city || address.town || address.village || ''
-                },
-                timezone: timezone,
-                fullAddress: data.display_name
-            });
-        } else {
-            res.json({
-                success: false,
-                error: 'Unable to reverse geocode location'
-            });
-        }
-    } catch (error) {
-        console.error('Reverse geocoding error:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Reverse geocoding service error'
-        });
-    }
-});
-
-// Get timezone for coordinates
-app.get('/api/timezone', (req, res) => {
-    try {
-        const { lat, lng } = req.query;
-        const timezone = getTimezoneFromCoords(parseFloat(lat), parseFloat(lng));
-
-        console.log(`Timezone for ${lat}, ${lng}: ${timezone}`);
-
-        res.json({
-            timezone: timezone,
-            timezoneName: getTimezoneNameFromOffset(timezone)
-        });
-    } catch (error) {
-        console.error('Timezone error:', error);
-        res.status(500).json({
-            timezone: 5.5, // Default to IST
-            timezoneName: 'Asia/Kolkata'
-        });
-    }
-});
-
-
-
-// Enhanced timezone function that considers historical dates
-function getTimezoneFromCoords(lat, lng, date = new Date()) {
-    try {
-        // Use geo-tz library for accurate timezone detection
-        const timeZone = geoTz.find(lat, lng)[0];
-
-        console.log(`Timezone for ${lat}, ${lng}: ${timeZone}`);
-
-        if (timeZone) {
-            // Get the offset for the SPECIFIC DATE in this timezone
-            const offset = moment.tz(moment(date), timeZone).utcOffset() / 60;
-            console.log(`Accurate timezone for ${lat}, ${lng} on ${moment(date).format('YYYY-MM-DD')}: ${timeZone} (offset: ${offset})`);
-            return offset;
-        }
-    } catch (error) {
-        console.error('Error with geo-tz:', error);
-    }
-
-    // Fallback to manual mapping for common locations - also pass the date
-    return getTimezoneFromCoordsManual(lat, lng, date);
-}
-
-// Enhanced manual timezone detection with historical awareness
-function getTimezoneFromCoordsManual(lat, lng, date = new Date()) {
-    console.log(`Manual timezone calculation for lat: ${lat}, lng: ${lng}, date: ${moment(date).format('YYYY-MM-DD')}`);
-
-    // Convert date to year for historical checks
-    const year = moment(date).year();
-    const month = moment(date).month() + 1; // 1-12
-
-    // Apply historical timezone rules
-
-    // India (standardized timezone in 1955)
-    if (lat >= 6.0 && lat <= 37.5 && lng >= 68.0 && lng <= 97.5) {
-        // Before 1955, India had multiple time zones
-        if (year < 1955) {
-            // Bombay Time (GMT+4:51)
-            if (lng < 77.0) return 4.85;
-            // Calcutta Time (GMT+5:53)
-            if (lng > 82.0) return 5.88;
-            // Otherwise standard IST
-        }
-        console.log('Detected: India timezone');
-        return 5.5; // IST (UTC+05:30)
-    }
-
-    // China standardized to one timezone in 1949
-    if (lat >= 15.0 && lat <= 54.0 && lng >= 73.0 && lng <= 135.0) {
-        if (year < 1949) {
-            // Pre-1949 China had 5 time zones
-            if (lng < 82.5) return 6; // Kunlun Time Zone
-            if (lng < 97.5) return 7; // Tianshan Time Zone
-            if (lng < 112.5) return 8; // Changbai Time Zone
-            if (lng < 127.5) return 9; // Taipei Time Zone
-            return 10; // Far Eastern Zone
-        }
-        console.log('Detected: China timezone');
-        return 8; // CST (UTC+08:00)
-    }
-
-    // United States - need to check DST historically
-    if (lat >= 25.0 && lat <= 72.0 && lng >= -180.0 && lng <= -66.0) {
-        let baseOffset = 0;
-        // Determine base timezone
-        if (lng >= -180.0 && lng <= -130.0) {
-            baseOffset = lat >= 51.0 ? -9 : -10; // Alaska: -9, Hawaii: -10
-        } else if (lng >= -125.0 && lng <= -120.0) {
-            baseOffset = -8; // PST
-        } else if (lng >= -120.0 && lng <= -105.0) {
-            baseOffset = -7; // MST
-        } else if (lng >= -105.0 && lng <= -90.0) {
-            baseOffset = -6; // CST
-        } else if (lng >= -90.0 && lng <= -66.0) {
-            baseOffset = -5; // EST
-        }
-
-        // Check if DST was in effect (simplified historical check)
-        if (isHistoricalDST(lat, lng, date)) {
-            baseOffset += 1; // Add 1 hour for DST
-            console.log(`Historical DST applied for US date ${moment(date).format('YYYY-MM-DD')}`);
-        }
-
-        return baseOffset;
-    }
-
-    // Add more historical adjustments for other regions here...
-
-    // For all other regions, first get standard offset
-    let baseOffset = calculateBaseOffset(lat, lng);
-
-    // Then check for historical DST
-    if (isHistoricalDST(lat, lng, date)) {
-        baseOffset += 1;
-    }
-
-    return baseOffset;
-}
-
-// Calculate base timezone offset (your existing logic)
-function calculateBaseOffset(lat, lng) {
-    // You can move most of your existing getTimezoneFromCoordsManual logic here
-    // This would be used to determine the standard (non-DST) offset
-
-    // Example for a few regions (you already have this logic in your original function)
-    if (lat >= 26.0 && lat <= 31.0 && lng >= 80.0 && lng <= 88.5) {
-        return 5.75; // Nepal
-    }
-    // Add more regions as needed...
-
-    // Fallback to mathematical calculation
-    let timezone = lng / 15;
-    timezone = Math.round(timezone * 2) / 2; // Round to nearest 0.5
-    return timezone;
-}
-
-// Check if DST was in effect historically (simplified)
-function isHistoricalDST(lat, lng, date) {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1; // 1-12
-    const day = date.getDate();
-    const northern = lat > 0;
-
-    // No DST before it was invented (first widely used in early 1900s)
-    if (year < 1908) return false;
-
-    // Different countries adopted DST at different times and with different rules
-    // This is a simplified approach - a complete solution would need a historical DST database
-
-    // United States - very simplified rule
-    if (lat >= 25.0 && lat <= 49.0 && lng >= -125.0 && lng <= -66.0) {
-        // US didn't have standard DST rules until 1966
-        if (year < 1966) {
-            // During World Wars, DST was observed year-round in some places
-            if ((year >= 1942 && year <= 1945) || (year >= 1914 && year <= 1918)) {
-                return true;
-            }
-            // Otherwise unpredictable, assume standard summer months
-            return month > 4 && month < 10;
-        }
-
-        // 1966-1986: Last Sunday in April to last Sunday in October
-        if (year < 1986) {
-            return month > 4 && month < 10;
-        }
-
-        // 1986-2006: First Sunday in April to last Sunday in October
-        if (year < 2007) {
-            return month > 4 && month < 10;
-        }
-
-        // 2007-present: Second Sunday in March to first Sunday in November
-        return month > 3 && month < 11;
-    }
-
-    // Europe - simplified
-    if (lat >= 35.0 && lat <= 72.0 && lng >= -10.0 && lng <= 40.0) {
-        // Various rules over time, simplifying greatly
-        if (year < 1980) {
-            return month > 3 && month < 10;
-        }
-        return month > 3 && month < 11;
-    }
-
-    // Southern hemisphere (Australia, South America, etc.)
-    if (!northern) {
-        return month < 4 || month > 9;
-    }
-
-    // General northern hemisphere fallback
-    return month > 3 && month < 10;
-}
-
-// // Helper function to get timezone from coordinates
-// function getTimezoneFromCoords(lat, lng) {
-//     // Simple timezone calculation based on longitude
-//     // For more accuracy, you could use a service like TimeZoneDB or Google TimeZone API
-
-//     // Rough calculation: 15 degrees longitude = 1 hour
-//     let timezone = lng / 15;
-
-//     // Round to nearest 0.5 hour
-//     timezone = Math.round(timezone * 2) / 2;
-
-//     console.log('Initial timezone from longitude:', lat, lng);
-//     console.log('Calculated timezone offset:', timezone);
-
-//     // Some adjustments for common timezones
-//     if (lat >= 20 && lat <= 40 && lng >= 68 && lng <= 97) {
-//         // India
-//         return 5.5;
-//     } else if (lat >= 31 && lat <= 42 && lng >= 74 && lng <= 87) {
-//         // China
-//         return 8;
-//     } else if (lat >= 49 && lat <= 60 && lng >= 2 && lng <= 10) {
-//         // Central Europe
-//         return 1;
-//     } else if (lat >= 40 && lat <= 49 && lng >= -125 && lng <= -66) {
-//         // US
-//         if (lng >= -125 && lng <= -120) return -8; // PST
-//         if (lng >= -120 && lng <= -105) return -7; // MST
-//         if (lng >= -105 && lng <= -90) return -6;  // CST
-//         if (lng >= -90 && lng <= -66) return -5;   // EST
-//     }
-
-//     console.log('Calculated timezone offset:', timezone);
-
-//     return timezone;
-// }
-
-function getTimezoneNameFromOffset(offset) {
-    const timezoneMap = {
-        '-12': 'Pacific/Baker_Island',
-        '-11': 'Pacific/Midway',
-        '-10': 'Pacific/Honolulu',
-        '-9': 'America/Anchorage',
-        '-8': 'America/Los_Angeles',
-        '-7': 'America/Denver',
-        '-6': 'America/Chicago',
-        '-5': 'America/New_York',
-        '-4': 'America/Halifax',
-        '-3': 'America/Sao_Paulo',
-        '-2': 'Atlantic/South_Georgia',
-        '-1': 'Atlantic/Azores',
-        '0': 'Europe/London',
-        '1': 'Europe/Berlin',
-        '2': 'Europe/Athens',
-        '3': 'Europe/Moscow',
-        '4': 'Asia/Dubai',
-        '5': 'Asia/Karachi',
-        '5.5': 'Asia/Kolkata',
-        '6': 'Asia/Dhaka',
-        '7': 'Asia/Bangkok',
-        '8': 'Asia/Shanghai',
-        '9': 'Asia/Tokyo',
-        '10': 'Australia/Sydney',
-        '11': 'Pacific/Norfolk',
-        '12': 'Pacific/Auckland',
-        '13': 'Pacific/Tongatapu',
-        '14': 'Pacific/Kiritimati'
-    };
-
-    return timezoneMap[offset.toString()] || 'UTC';
-}
-
-// Error handling middleware
-app.use((error, req, res, next) => {
-    console.error('Unhandled error:', error);
-    res.status(500).json({
-        success: false,
-        error: 'Internal server error',
-        message: error.message
-    });
-});
-
-
-app.listen(PORT, () => {
-    console.log(`🌟 Vedic Astrology API server running on port ${PORT}`);
-    console.log(`🔮 Main endpoint: POST http://localhost:${PORT}/api/astrology/calculate`);
-    console.log(`📖 Documentation: http://localhost:${PORT}/api/docs`);
-    console.log(`⭐ Test with your birth data: node test-api.js`);
-});
-
-
-
-
-// Fallback city database for major cities
-const fallbackCities = [
-    { name: "Mumbai, Maharashtra, India", latitude: 19.0760, longitude: 72.8777, timezone: 5.5, region: "Maharashtra", country: "India" },
-    { name: "Delhi, Delhi, India", latitude: 28.6139, longitude: 77.2090, timezone: 5.5, region: "Delhi", country: "India" },
-    { name: "Bangalore, Karnataka, India", latitude: 12.9716, longitude: 77.5946, timezone: 5.5, region: "Karnataka", country: "India" },
-    { name: "Chennai, Tamil Nadu, India", latitude: 13.0827, longitude: 80.2707, timezone: 5.5, region: "Tamil Nadu", country: "India" },
-    { name: "Kolkata, West Bengal, India", latitude: 22.5726, longitude: 88.3639, timezone: 5.5, region: "West Bengal", country: "India" },
-    { name: "Hyderabad, Telangana, India", latitude: 17.3850, longitude: 78.4867, timezone: 5.5, region: "Telangana", country: "India" },
-    { name: "Pune, Maharashtra, India", latitude: 18.5204, longitude: 73.8567, timezone: 5.5, region: "Maharashtra", country: "India" },
-    { name: "Ahmedabad, Gujarat, India", latitude: 23.0225, longitude: 72.5714, timezone: 5.5, region: "Gujarat", country: "India" },
-    { name: "Jaipur, Rajasthan, India", latitude: 26.9124, longitude: 75.7873, timezone: 5.5, region: "Rajasthan", country: "India" },
-    { name: "Lucknow, Uttar Pradesh, India", latitude: 26.8467, longitude: 80.9462, timezone: 5.5, region: "Uttar Pradesh", country: "India" },
-    { name: "New York, NY, USA", latitude: 40.7128, longitude: -74.0060, timezone: -5, region: "New York", country: "USA" },
-    { name: "London, England, UK", latitude: 51.5074, longitude: -0.1278, timezone: 0, region: "England", country: "UK" },
-    { name: "Paris, Île-de-France, France", latitude: 48.8566, longitude: 2.3522, timezone: 1, region: "Île-de-France", country: "France" },
-    { name: "Tokyo, Tokyo, Japan", latitude: 35.6762, longitude: 139.6503, timezone: 9, region: "Tokyo", country: "Japan" },
-    { name: "Sydney, NSW, Australia", latitude: -33.8688, longitude: 151.2093, timezone: 10, region: "NSW", country: "Australia" },
-    { name: "Dubai, Dubai, UAE", latitude: 25.2048, longitude: 55.2708, timezone: 4, region: "Dubai", country: "UAE" },
-    { name: "Singapore, Singapore", latitude: 1.3521, longitude: 103.8198, timezone: 8, region: "Singapore", country: "Singapore" },
-    { name: "Toronto, ON, Canada", latitude: 43.6532, longitude: -79.3832, timezone: -5, region: "Ontario", country: "Canada" },
-    { name: "Berlin, Berlin, Germany", latitude: 52.5200, longitude: 13.4050, timezone: 1, region: "Berlin", country: "Germany" },
-    { name: "Moscow, Moscow, Russia", latitude: 55.7558, longitude: 37.6176, timezone: 3, region: "Moscow", country: "Russia" }
-];
-
-// Utility function to validate input
-function validateSearchQuery(query) {
-    if (!query || typeof query !== 'string') {
-        return false;
-    }
-    // Remove extra spaces and check length
-    const trimmed = query.trim();
-    return trimmed.length >= 2 && trimmed.length <= 100;
-}
-
-// Utility function to search fallback cities
-function searchFallbackCities(query) {
-    const searchTerm = query.toLowerCase();
-    return fallbackCities.filter(city =>
-        city.name.toLowerCase().includes(searchTerm) ||
-        city.region.toLowerCase().includes(searchTerm) ||
-        city.country.toLowerCase().includes(searchTerm)
-    ).slice(0, 5); // Limit to 5 results
-}
-
-// // Utility function to get timezone from coordinates
-// async function getTimezoneFromCoords(lat, lng) {
-//     try {
-//         // Try GeoNames API first (free, but requires registration)
-//         // You can register at http://www.geonames.org/login and replace 'demo' with your username
-//         const response = await axios.get(`http://api.geonames.org/timezoneJSON`, {
-//             params: {
-//                 lat: lat,
-//                 lng: lng,
-//                 username: 'demo' // Replace with your GeoNames username
-//             },
-//             timeout: 5000
-//         });
-
-//         console.log('Timezone for', response.data);
-
-//         if (response.data && response.data.gmtOffset !== undefined) {
-//             return parseFloat(response.data.gmtOffset);
-//         }
-//     } catch (error) {
-//         console.log('GeoNames timezone API failed, using fallback');
-//     }
-
-//     // Fallback timezone calculation (rough approximation based on longitude)
-//     const timezoneOffset = Math.round(lng / 15);
-//     return Math.max(-12, Math.min(12, timezoneOffset));
-// }
-
-// Main location search endpoint
 app.post('/api/places/search', async (req, res) => {
     try {
         // Extract query and birthDate parameters
-        const { query, birthDate } = req.body;
+        const { query, date } = req.body;
+
+        console.log('Search query:', req.body);
 
         // Validate input
         if (!validateSearchQuery(query)) {
@@ -1090,11 +595,11 @@ app.post('/api/places/search', async (req, res) => {
                 error: 'Query must be between 2 and 100 characters'
             });
         }
-
-        const searchQuery = query.trim();
         
-        // Create a date-specific cache key if birthDate is provided
-        const dateStr = birthDate ? new Date(birthDate).toISOString().split('T')[0] : 'current';
+        const searchQuery = query.trim();
+
+        // Create a date-specific cache key if date is provided
+        const dateStr = date ? new Date(date).toISOString().split('T')[0] : 'current';
         const cacheKey = `search_${searchQuery.toLowerCase()}_${dateStr}`;
 
         // Check cache first with date-aware key
@@ -1105,7 +610,7 @@ app.post('/api/places/search', async (req, res) => {
 
         let results = [];
 
-        console.log(`Searching for: ${searchQuery} (Birth date: ${birthDate || 'not provided'})`);
+        console.log(`Searching for: ${searchQuery} (Date: ${date || 'not provided'})`);
 
         try {
             // Use Google Places API Autocomplete with NO type restriction
@@ -1148,13 +653,20 @@ app.post('/api/places/search', async (req, res) => {
                                 const place = detailsResponse.data.result;
                                 const lat = place.geometry.location.lat;
                                 const lng = place.geometry.location.lng;
-                                
-                                // Parse birth date if provided, otherwise use current date
-                                const dateForTimezone = birthDate ? new Date(birthDate) : new Date();
+
+                                // Parse date if provided, otherwise use current date
+                                const dateForTimezone = date ? new Date(date) : new Date();
+
+                                console.log('Date for timezone calculation:', dateForTimezone);
                                 
                                 // Get timezone for the specific date
-                                const timezone = await getTimezoneFromCoords(lat, lng, dateForTimezone);
-                                
+                                let timezone = await getTimezoneFromCoords(lat, lng, dateForTimezone);
+
+                                const timeZone1 = await getAstrologyData(lat, lng, dateForTimezone);
+
+                                console.log('Astrology Data Timezone:', timezone);
+                                console.log('Astrology Data Timezone:', timeZone1);
+
                                 // Parse address components with more detail
                                 const addressComponents = place.address_components || [];
                                 let locality = '';
@@ -1220,8 +732,8 @@ app.post('/api/places/search', async (req, res) => {
                                     placeId: prediction.place_id,
                                     latitude: lat,
                                     longitude: lng,
-                                    timezone: timezone,
-                                    historicalOffset: birthDate ? true : false,
+                                    timezone: timeZone1.offsets.current                                                   ,
+                                    historicalOffset: date ? true : false,
                                     formattedAddress: place.formatted_address || displayName,
                                     specificLocation: specificLocation,
                                     city: city,
@@ -1230,7 +742,7 @@ app.post('/api/places/search', async (req, res) => {
                                     country: country,
                                     postalCode: postalCode,
                                     locationType: locationType,
-                                    referenceDate: birthDate ? new Date(birthDate).toISOString() : new Date().toISOString()
+                                    referenceDate: date ? new Date(date).toISOString() : new Date().toISOString()
                                 };
                             }
                         } catch (detailError) {
@@ -1249,7 +761,7 @@ app.post('/api/places/search', async (req, res) => {
 
         // Check if the query might be coordinates
         if (results.length === 0) {
-            const coordsResult = await tryParseCoordinates(searchQuery, birthDate);
+            const coordsResult = await tryParseCoordinates(searchQuery, date);
             if (coordsResult) {
                 results = [coordsResult];
             }
@@ -1257,22 +769,22 @@ app.post('/api/places/search', async (req, res) => {
 
         // If no results from API or coords, search fallback locations
         if (results.length === 0) {
-            // Pass the birth date to your fallback search function if you have one
-            results = searchFallbackLocations(searchQuery, birthDate ? new Date(birthDate) : null);
+            // Pass the date to your fallback search function if you have one
+            results = searchFallbackLocations(searchQuery, date ? new Date(date) : null);
         }
 
         // If still no results, provide a default option
         if (results.length === 0) {
             // Use the birth date for calculating the default timezone if provided
-            const defaultTimezone = birthDate ? 
-                await getTimezoneFromCoords(28.6139, 77.2090, new Date(birthDate)) : 5.5;
+            const defaultTimezone = date ? 
+                await getTimezoneFromCoords(28.6139, 77.2090, new Date(date)) : 5.5;
             
             results = [{
                 name: `${searchQuery} (Default Location)`,
                 latitude: 28.6139, // Default to Delhi
                 longitude: 77.2090,
                 timezone: defaultTimezone,
-                historicalOffset: birthDate ? true : false,
+                historicalOffset: date ? true : false,
                 formattedAddress: `${searchQuery} (Default coordinates used)`,
                 specificLocation: searchQuery,
                 city: 'Unknown',
@@ -1280,7 +792,7 @@ app.post('/api/places/search', async (req, res) => {
                 region: 'Unknown',
                 country: 'Unknown',
                 locationType: 'unknown',
-                referenceDate: birthDate ? new Date(birthDate).toISOString() : null
+                referenceDate: date ? new Date(date).toISOString() : null
             }];
         }
 
@@ -1430,133 +942,539 @@ function searchFallbackLocations(query, birthDate) {
     return [];
 }
 
-// Geocoding endpoint (fallback)
-app.post('/api/places/geocode', async (req, res) => {
-    try {
-        const { address } = req.body;
-
-        if (!validateSearchQuery(address)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Address must be between 2 and 100 characters'
-            });
-        }
-
-        const cacheKey = `geocode_${address.toLowerCase()}`;
-        const cachedResult = cache.get(cacheKey);
-
-        if (cachedResult) {
-            return res.json(cachedResult);
-        }
-
-        let result = null;
-
-        try {
-            // Try OpenStreetMap Nominatim for geocoding
-            const response = await axios.get('https://nominatim.openstreetmap.org/search', {
-                params: {
-                    q: address,
-                    format: 'json',
-                    limit: 1,
-                    'accept-language': 'en',
-                    addressdetails: 1
-                },
-                headers: {
-                    'User-Agent': 'AstrologyPortal/1.0 (your-email@domain.com)'
-                },
-                timeout: 8000
-            });
-
-            if (response.data && response.data.length > 0) {
-                const place = response.data[0];
-                const lat = parseFloat(place.lat);
-                const lng = parseFloat(place.lon);
-                const timezone = await getTimezoneFromCoords(lat, lng);
-
-                result = {
-                    formatted_address: place.display_name,
-                    latitude: lat,
-                    longitude: lng,
-                    timezone: timezone
-                };
-            }
-        } catch (apiError) {
-            console.error('Geocoding API error:', apiError.message);
-        }
-
-        // Fallback to manual entry with default coordinates
-        if (!result) {
-            result = {
-                formatted_address: address,
-                latitude: 28.6139,
-                longitude: 77.2090,
-                timezone: 5.5
-            };
-        }
-
-        const response = {
-            success: true,
-            results: [result]
-        };
-
-        cache.set(cacheKey, response);
-        res.json(response);
-
-    } catch (error) {
-        console.error('Geocoding error:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Internal server error during geocoding'
-        });
+// Utility function to validate input
+function validateSearchQuery(query) {
+    if (!query || typeof query !== 'string') {
+        return false;
     }
+    // Remove extra spaces and check length
+    const trimmed = query.trim();
+    return trimmed.length >= 2 && trimmed.length <= 100;
+}
+
+
+// Enhanced timezone function that considers historical dates
+function getTimezoneFromCoords(lat, lng, date = new Date()) {
+    try {
+        // Use geo-tz library for accurate timezone detection
+        const timeZone = geoTz.find(lat, lng)[0];
+
+        console.log(`Timezone for ${lat}, ${lng}: ${timeZone}`);
+
+        if (timeZone) {
+            // Get the offset for the SPECIFIC DATE in this timezone
+            const offset = moment.tz(moment(date), timeZone).utcOffset() / 60;
+            console.log(`Accurate timezone for ${lat}, ${lng} on ${moment(date).format('YYYY-MM-DD')}: ${timeZone} (offset: ${offset})`);
+            return offset;
+        }
+    } catch (error) {
+        console.error('Error with geo-tz:', error);
+    }
+
+    // Fallback to manual mapping for common locations - also pass the date
+    return getTimezoneFromCoordsManual(lat, lng, date);
+}
+
+// Enhanced manual timezone detection with historical awareness
+function getTimezoneFromCoordsManual(lat, lng, date = new Date()) {
+    console.log(`Manual timezone calculation for lat: ${lat}, lng: ${lng}, date: ${moment(date).format('YYYY-MM-DD')}`);
+
+    // Convert date to year for historical checks
+    const year = moment(date).year();
+    const month = moment(date).month() + 1; // 1-12
+
+    // Apply historical timezone rules
+
+    // ASIA - Enhanced coverage with precise offsets
+    
+    // India (standardized timezone in 1955)
+    if (lat >= 6.0 && lat <= 37.5 && lng >= 68.0 && lng <= 97.5) {
+        if (year < 1955) {
+            if (lng < 77.0) return 4.85; // Bombay Time (GMT+4:51)
+            if (lng > 82.0) return 5.88; // Calcutta Time (GMT+5:53)
+        }
+        console.log('Detected: India timezone');
+        return 5.5; // IST (UTC+05:30)
+    }
+
+    // Nepal - UTC+05:45
+    if (lat >= 26.0 && lat <= 31.0 && lng >= 80.0 && lng <= 88.5) {
+        console.log('Detected: Nepal timezone');
+        return 5.75; // NPT (UTC+05:45)
+    }
+
+    // Myanmar - UTC+06:30
+    if (lat >= 9.0 && lat <= 29.0 && lng >= 92.0 && lng <= 102.0) {
+        console.log('Detected: Myanmar timezone');
+        return 6.5; // MMT (UTC+06:30)
+    }
+
+    // Iran - UTC+03:30
+    if (lat >= 25.0 && lat <= 40.0 && lng >= 44.0 && lng <= 64.0) {
+        console.log('Detected: Iran timezone');
+        return 3.5; // IRST (UTC+03:30)
+    }
+
+    // Afghanistan - UTC+04:30
+    if (lat >= 29.0 && lat <= 39.0 && lng >= 60.0 && lng <= 75.0) {
+        console.log('Detected: Afghanistan timezone');
+        return 4.5; // AFT (UTC+04:30)
+    }
+
+    // Bangladesh - UTC+06:00
+    if (lat >= 20.0 && lat <= 27.0 && lng >= 88.0 && lng <= 93.0) {
+        console.log('Detected: Bangladesh timezone');
+        return 6.0; // BST (UTC+06:00)
+    }
+
+    // Sri Lanka - UTC+05:30
+    if (lat >= 5.0 && lat <= 10.0 && lng >= 79.0 && lng <= 82.0) {
+        console.log('Detected: Sri Lanka timezone');
+        return 5.5; // SLST (UTC+05:30)
+    }
+
+    // Pakistan - UTC+05:00
+    if (lat >= 23.0 && lat <= 37.0 && lng >= 60.0 && lng <= 78.0) {
+        console.log('Detected: Pakistan timezone');
+        return 5.0; // PKT (UTC+05:00)
+    }
+
+    // Thailand, Vietnam, Cambodia, Laos - UTC+07:00
+    if (lat >= 5.0 && lat <= 24.0 && lng >= 92.0 && lng <= 110.0) {
+        console.log('Detected: Southeast Asia timezone');
+        return 7.0; // ICT (UTC+07:00)
+    }
+
+    // Indonesia - Multiple zones
+    if (lat >= -11.0 && lat <= 6.0 && lng >= 95.0 && lng <= 141.0) {
+        if (lng <= 120.0) return 7.0; // WIB (Western Indonesia)
+        if (lng <= 140.0) return 8.0; // WITA (Central Indonesia)
+        return 9.0; // WIT (Eastern Indonesia)
+    }
+
+    // Malaysia, Singapore, Philippines - UTC+08:00
+    if (lat >= -3.0 && lat <= 20.0 && lng >= 99.0 && lng <= 127.0) {
+        console.log('Detected: Malaysia/Singapore/Philippines timezone');
+        return 8.0; // MYT/SGT/PHT (UTC+08:00)
+    }
+
+    // Japan - UTC+09:00
+    if (lat >= 24.0 && lat <= 46.0 && lng >= 123.0 && lng <= 146.0) {
+        console.log('Detected: Japan timezone');
+        return 9.0; // JST (UTC+09:00)
+    }
+
+    // South Korea - UTC+09:00
+    if (lat >= 33.0 && lat <= 39.0 && lng >= 124.0 && lng <= 132.0) {
+        console.log('Detected: South Korea timezone');
+        return 9.0; // KST (UTC+09:00)
+    }
+
+    // North Korea - UTC+08:30 (changed in 2015, was +09:00)
+    if (lat >= 37.0 && lat <= 43.0 && lng >= 124.0 && lng <= 131.0) {
+        if (year >= 2015 && year < 2018) return 8.5; // PYT (UTC+08:30)
+        return 9.0; // KST (UTC+09:00)
+    }
+
+    // China (standardized to one timezone in 1949)
+    if (lat >= 15.0 && lat <= 54.0 && lng >= 73.0 && lng <= 135.0) {
+        if (year < 1949) {
+            if (lng < 82.5) return 6; // Kunlun Time Zone
+            if (lng < 97.5) return 7; // Tianshan Time Zone
+            if (lng < 112.5) return 8; // Changbai Time Zone
+            if (lng < 127.5) return 9; // Taipei Time Zone
+            return 10; // Far Eastern Zone
+        }
+        console.log('Detected: China timezone');
+        return 8; // CST (UTC+08:00)
+    }
+
+    // EUROPE - With DST considerations
+    
+    // United Kingdom and Ireland - UTC+00:00/+01:00
+    if (lat >= 49.0 && lat <= 61.0 && lng >= -11.0 && lng <= 2.0) {
+        let baseOffset = 0; // GMT
+        if (isHistoricalDST(lat, lng, date)) {
+            baseOffset += 1; // BST
+        }
+        console.log('Detected: UK/Ireland timezone');
+        return baseOffset;
+    }
+
+    // Western Europe (Portugal, Spain) - UTC+00:00/+01:00 or UTC+01:00/+02:00
+    if (lat >= 35.0 && lat <= 44.0 && lng >= -10.0 && lng <= 4.0) {
+        let baseOffset = lng < -6.0 ? 0 : 1; // Portugal: GMT, Spain: CET
+        if (isHistoricalDST(lat, lng, date)) {
+            baseOffset += 1;
+        }
+        console.log('Detected: Western Europe timezone');
+        return baseOffset;
+    }
+
+    // Central Europe - UTC+01:00/+02:00
+    if (lat >= 45.0 && lat <= 55.0 && lng >= 4.0 && lng <= 20.0) {
+        let baseOffset = 1; // CET
+        if (isHistoricalDST(lat, lng, date)) {
+            baseOffset += 1; // CEST
+        }
+        console.log('Detected: Central Europe timezone');
+        return baseOffset;
+    }
+
+    // Eastern Europe - UTC+02:00/+03:00
+    if (lat >= 40.0 && lat <= 60.0 && lng >= 20.0 && lng <= 30.0) {
+        let baseOffset = 2; // EET
+        if (isHistoricalDST(lat, lng, date)) {
+            baseOffset += 1; // EEST
+        }
+        console.log('Detected: Eastern Europe timezone');
+        return baseOffset;
+    }
+
+    // Russia - Multiple time zones
+    if (lat >= 41.0 && lat <= 82.0 && lng >= 19.0 && lng <= 180.0) {
+        if (lng < 40.0) return 3; // MSK (Moscow)
+        if (lng < 53.0) return 4; // SAMT (Samara)
+        if (lng < 68.0) return 5; // YEKT (Yekaterinburg)
+        if (lng < 83.0) return 6; // OMST (Omsk)
+        if (lng < 98.0) return 7; // KRAT (Krasnoyarsk)
+        if (lng < 113.0) return 8; // IRKT (Irkutsk)
+        if (lng < 128.0) return 9; // YAKT (Yakutsk)
+        if (lng < 143.0) return 10; // VLAT (Vladivostok)
+        if (lng < 158.0) return 11; // MAGT (Magadan)
+        return 12; // PETT (Kamchatka)
+    }
+
+    // AFRICA
+    
+    // North Africa - UTC+01:00
+    if (lat >= 15.0 && lat <= 37.0 && lng >= -17.0 && lng <= 25.0) {
+        console.log('Detected: North Africa timezone');
+        return 1.0; // WAT/CET
+    }
+
+    // West Africa - UTC+00:00
+    if (lat >= -10.0 && lat <= 15.0 && lng >= -17.0 && lng <= 15.0) {
+        console.log('Detected: West Africa timezone');
+        return 0.0; // GMT
+    }
+
+    // Central Africa - UTC+01:00
+    if (lat >= -15.0 && lat <= 15.0 && lng >= 15.0 && lng <= 30.0) {
+        console.log('Detected: Central Africa timezone');
+        return 1.0; // WAT
+    }
+
+    // East Africa - UTC+03:00
+    if (lat >= -15.0 && lat <= 15.0 && lng >= 30.0 && lng <= 50.0) {
+        console.log('Detected: East Africa timezone');
+        return 3.0; // EAT
+    }
+
+    // South Africa - UTC+02:00
+    if (lat >= -35.0 && lat <= -15.0 && lng >= 15.0 && lng <= 35.0) {
+        console.log('Detected: South Africa timezone');
+        return 2.0; // SAST
+    }
+
+    // AMERICAS
+    
+    // United States and Canada - Multiple zones with DST
+    if (lat >= 25.0 && lat <= 72.0 && lng >= -180.0 && lng <= -66.0) {
+        let baseOffset = 0;
+        
+        // Determine base timezone
+        if (lng >= -180.0 && lng <= -130.0) {
+            baseOffset = lat >= 51.0 ? -9 : -10; // Alaska: -9, Hawaii: -10
+        } else if (lng >= -130.0 && lng <= -120.0) {
+            baseOffset = -8; // PST
+        } else if (lng >= -120.0 && lng <= -105.0) {
+            baseOffset = -7; // MST
+        } else if (lng >= -105.0 && lng <= -90.0) {
+            baseOffset = -6; // CST
+        } else if (lng >= -90.0 && lng <= -66.0) {
+            baseOffset = -5; // EST
+        }
+
+        // Newfoundland special case - UTC-03:30
+        if (lat >= 46.0 && lat <= 52.0 && lng >= -60.0 && lng <= -52.0) {
+            baseOffset = -3.5; // NST
+            if (isHistoricalDST(lat, lng, date)) {
+                baseOffset += 1; // NDT
+            }
+            return baseOffset;
+        }
+
+        // Check if DST was in effect
+        if (isHistoricalDST(lat, lng, date)) {
+            baseOffset += 1;
+        }
+
+        console.log('Detected: North America timezone');
+        return baseOffset;
+    }
+
+    // Mexico - Multiple zones
+    if (lat >= 14.0 && lat <= 33.0 && lng >= -118.0 && lng <= -86.0) {
+        if (lng < -115.0) return -8; // PST (Baja California)
+        if (lng < -105.0) return -7; // MST (Northwest)
+        if (lng < -90.0) return -6; // CST (Most of Mexico)
+        return -5; // EST (Southeast)
+    }
+
+    // Central America - UTC-06:00
+    if (lat >= 7.0 && lat <= 18.0 && lng >= -92.0 && lng <= -77.0) {
+        console.log('Detected: Central America timezone');
+        return -6.0; // CST
+    }
+
+    // Caribbean - UTC-04:00 to UTC-05:00
+    if (lat >= 10.0 && lat <= 27.0 && lng >= -85.0 && lng <= -59.0) {
+        if (lng > -75.0) return -4.0; // AST (Eastern Caribbean)
+        return -5.0; // EST (Western Caribbean)
+    }
+
+    // South America
+    if (lat >= -56.0 && lat <= 13.0 && lng >= -82.0 && lng <= -34.0) {
+        // Brazil - Multiple zones
+        if (lat >= -34.0 && lat <= 5.0 && lng >= -74.0 && lng <= -34.0) {
+            if (lng > -68.0) return -3.0; // BRT (Brasília)
+            if (lng > -74.0) return -4.0; // AMT (Amazon)
+            return -5.0; // ACT (Acre)
+        }
+        
+        // Argentina, Chile, Uruguay - UTC-03:00
+        if (lat >= -56.0 && lat <= -21.0 && lng >= -74.0 && lng <= -53.0) {
+            return -3.0; // ART/CLT/UYT
+        }
+        
+        // Colombia, Ecuador, Peru - UTC-05:00
+        if (lat >= -18.0 && lat <= 13.0 && lng >= -82.0 && lng <= -66.0) {
+            return -5.0; // COT/ECT/PET
+        }
+        
+        // Venezuela - UTC-04:00
+        if (lat >= 0.0 && lat <= 13.0 && lng >= -73.0 && lng <= -59.0) {
+            return -4.0; // VET
+        }
+        
+        // Default South America
+        return -3.0;
+    }
+
+    // OCEANIA
+    
+    // Australia - Multiple zones
+    if (lat >= -44.0 && lat <= -10.0 && lng >= 113.0 && lng <= 154.0) {
+        if (lng < 129.0) return 8.0; // AWST (Western Australia)
+        if (lng < 137.0) return 9.5; // ACST (Central Australia - Adelaide)
+        if (lng < 142.0) return 9.0; // ACST (Northern Territory)
+        
+        // Eastern Australia with DST consideration
+        let baseOffset = 10.0; // AEST
+        if (isHistoricalDST(lat, lng, date) && lat < -28.0) {
+            baseOffset += 1; // AEDT (only southern parts observe DST)
+        }
+        return baseOffset;
+    }
+
+    // New Zealand - UTC+12:00/+13:00
+    if (lat >= -47.0 && lat <= -34.0 && lng >= 166.0 && lng <= 179.0) {
+        let baseOffset = 12.0; // NZST
+        if (isHistoricalDST(lat, lng, date)) {
+            baseOffset += 1; // NZDT
+        }
+        console.log('Detected: New Zealand timezone');
+        return baseOffset;
+    }
+
+    // Pacific Islands
+    if (lat >= -25.0 && lat <= 25.0 && lng >= 130.0 && lng <= -140.0) {
+        if (lng > 0) {
+            // Western Pacific
+            if (lng < 145.0) return 9.0; // Palau
+            if (lng < 155.0) return 10.0; // Guam
+            if (lng < 165.0) return 11.0; // Solomon Islands
+            return 12.0; // Fiji, Marshall Islands
+        } else {
+            // Eastern Pacific
+            if (lng > -140.0) return -10.0; // Hawaii-Aleutian
+            return -11.0; // Samoa
+        }
+    }
+
+    // MIDDLE EAST
+    
+    // Israel - UTC+02:00/+03:00
+    if (lat >= 29.0 && lat <= 34.0 && lng >= 34.0 && lng <= 36.0) {
+        let baseOffset = 2.0; // IST
+        if (isHistoricalDST(lat, lng, date)) {
+            baseOffset += 1; // IDT
+        }
+        console.log('Detected: Israel timezone');
+        return baseOffset;
+    }
+
+    // Turkey - UTC+03:00
+    if (lat >= 35.0 && lat <= 43.0 && lng >= 26.0 && lng <= 45.0) {
+        console.log('Detected: Turkey timezone');
+        return 3.0; // TRT
+    }
+
+    // Saudi Arabia, UAE, Kuwait - UTC+03:00
+    if (lat >= 12.0 && lat <= 32.0 && lng >= 34.0 && lng <= 60.0) {
+        console.log('Detected: Arabian Peninsula timezone');
+        return 3.0; // AST
+    }
+
+    // Jordan, Lebanon, Syria - UTC+02:00/+03:00
+    if (lat >= 32.0 && lat <= 38.0 && lng >= 35.0 && lng <= 43.0) {
+        let baseOffset = 2.0;
+        if (isHistoricalDST(lat, lng, date)) {
+            baseOffset += 1;
+        }
+        console.log('Detected: Levant timezone');
+        return baseOffset;
+    }
+
+    // For all other regions, use enhanced mathematical calculation
+    let baseOffset = calculateBaseOffset(lat, lng);
+
+    // Then check for historical DST
+    if (isHistoricalDST(lat, lng, date)) {
+        baseOffset += 1;
+    }
+
+    return baseOffset;
+}
+
+// Enhanced calculateBaseOffset function
+function calculateBaseOffset(lat, lng) {
+    // Enhanced precision timezone mappings for edge cases
+    const timezoneMap = [
+        { bounds: [26.0, 31.0, 80.0, 88.5], offset: 5.75 },  // Nepal
+        { bounds: [9.0, 29.0, 92.0, 102.0], offset: 6.5 },   // Myanmar
+        { bounds: [25.0, 40.0, 44.0, 64.0], offset: 3.5 },   // Iran
+        { bounds: [29.0, 39.0, 60.0, 75.0], offset: 4.5 },   // Afghanistan
+        { bounds: [37.0, 43.0, 124.0, 131.0], offset: 8.5 }, // North Korea (2015-2018)
+        { bounds: [46.0, 52.0, -60.0, -52.0], offset: -3.5 }, // Newfoundland
+        { bounds: [-44.0, -28.0, 129.0, 137.0], offset: 9.5 } // Central Australia
+    ];
+    
+    // Check if coordinates fall within any precise timezone
+    for (const zone of timezoneMap) {
+        const [minLat, maxLat, minLng, maxLng] = zone.bounds;
+        if (lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng) {
+            return zone.offset;
+        }
+    }
+    
+    // Fallback to mathematical calculation with higher precision
+    let timezone = lng / 15;
+    timezone = Math.round(timezone * 4) / 4; // Round to nearest 0.25
+    return timezone;
+}
+
+// Calculate base timezone offset (your existing logic)
+// Replace the entire fallback section with:
+function calculateBaseOffset(lat, lng) {
+    // Enhanced precision timezone mappings
+    const timezoneMap = [
+        { bounds: [8.0, 37.5, 68.0, 97.5], offset: 5.5 },    // India
+        { bounds: [26.0, 31.0, 80.0, 88.5], offset: 5.75 },  // Nepal
+        { bounds: [25.0, 40.0, 44.0, 64.0], offset: 3.5 },   // Iran
+        { bounds: [29.0, 39.0, 60.0, 75.0], offset: 4.5 },   // Afghanistan
+        { bounds: [9.0, 29.0, 92.0, 102.0], offset: 6.5 },   // Myanmar
+        { bounds: [37.0, 43.0, 124.0, 131.0], offset: 8.5 }  // North Korea
+    ];
+    
+    // Check if coordinates fall within any precise timezone
+    for (const zone of timezoneMap) {
+        const [minLat, maxLat, minLng, maxLng] = zone.bounds;
+        if (lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng) {
+            return zone.offset;
+        }
+    }
+    
+    // Fallback to mathematical calculation with higher precision
+    let timezone = lng / 15;
+    timezone = Math.round(timezone * 4) / 4; // Round to nearest 0.25
+    return timezone;
+}
+
+// Check if DST was in effect historically (simplified)
+function isHistoricalDST(lat, lng, date) {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1; // 1-12
+    const day = date.getDate();
+    const northern = lat > 0;
+
+    // No DST before it was invented (first widely used in early 1900s)
+    if (year < 1908) return false;
+
+    // Different countries adopted DST at different times and with different rules
+    // This is a simplified approach - a complete solution would need a historical DST database
+
+    // United States - very simplified rule
+    if (lat >= 25.0 && lat <= 49.0 && lng >= -125.0 && lng <= -66.0) {
+        // US didn't have standard DST rules until 1966
+        if (year < 1966) {
+            // During World Wars, DST was observed year-round in some places
+            if ((year >= 1942 && year <= 1945) || (year >= 1914 && year <= 1918)) {
+                return true;
+            }
+            // Otherwise unpredictable, assume standard summer months
+            return month > 4 && month < 10;
+        }
+
+        // 1966-1986: Last Sunday in April to last Sunday in October
+        if (year < 1986) {
+            return month > 4 && month < 10;
+        }
+
+        // 1986-2006: First Sunday in April to last Sunday in October
+        if (year < 2007) {
+            return month > 4 && month < 10;
+        }
+
+        // 2007-present: Second Sunday in March to first Sunday in November
+        return month > 3 && month < 11;
+    }
+
+    // Europe - simplified
+    if (lat >= 35.0 && lat <= 72.0 && lng >= -10.0 && lng <= 40.0) {
+        // Various rules over time, simplifying greatly
+        if (year < 1980) {
+            return month > 3 && month < 10;
+        }
+        return month > 3 && month < 11;
+    }
+
+    // Southern hemisphere (Australia, South America, etc.)
+    if (!northern) {
+        return month < 4 || month > 9;
+    }
+
+    // General northern hemisphere fallback
+    return month > 3 && month < 10;
+}
+
+// Error handling middleware
+app.use((error, req, res, next) => {
+    console.error('Unhandled error:', error);
+    res.status(500).json({
+        success: false,
+        error: 'Internal server error',
+        message: error.message
+    });
 });
 
-// Timezone endpoint
-app.get('/api/places/timezone', async (req, res) => {
-    try {
-        const { lat, lng } = req.query;
 
-        const latitude = parseFloat(lat);
-        const longitude = parseFloat(lng);
-
-        if (isNaN(latitude) || isNaN(longitude)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Invalid latitude or longitude'
-            });
-        }
-
-        if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
-            return res.status(400).json({
-                success: false,
-                error: 'Latitude must be between -90 and 90, longitude between -180 and 180'
-            });
-        }
-
-        const cacheKey = `timezone_${latitude.toFixed(4)}_${longitude.toFixed(4)}`;
-        const cachedResult = cache.get(cacheKey);
-
-        if (cachedResult) {
-            return res.json(cachedResult);
-        }
-
-        const timezone = await getTimezoneFromCoords(latitude, longitude);
-
-        const response = {
-            success: true,
-            timezone: timezone
-        };
-
-        cache.set(cacheKey, response);
-        res.json(response);
-
-    } catch (error) {
-        console.error('Timezone error:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Internal server error during timezone lookup'
-        });
-    }
+app.listen(PORT, () => {
+    console.log(`🌟 Vedic Astrology API server running on port ${PORT}`);
+    console.log(`🔮 Main endpoint: POST http://localhost:${PORT}/api/astrology/calculate`);
+    console.log(`📖 Documentation: http://localhost:${PORT}/api/docs`);
+    console.log(`⭐ Test with your birth data: node test-api.js`);
 });
 
 
