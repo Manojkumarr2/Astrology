@@ -27,6 +27,9 @@ const { Country, State, City } = require('country-state-city');
 const geoTz = require('geo-tz');
 const moment = require('moment-timezone');
 
+const tzUtil = require('./utils/timeZonesUtils');
+
+
 const app = express();
 
 const cache = new NodeCache({ stdTTL: 3600 });
@@ -142,10 +145,10 @@ app.post('/api/astrology/calculate', async (req, res) => {
 
         // 2) Add Maandhi into planetary positions before generating chart
         //    Option A: as 'Maandhi'
-        birthChartGenerator.addMaandhiToPositions(positions, {
-            name: 'Maandhi',
-            longitude: maandhiLongitude
-        });
+        // birthChartGenerator.addMaandhiToPositions(positions, {
+        //     name: 'Maandhi',
+        //     longitude: maandhiLongitude
+        // });
 
         const birthChart = birthChartGenerator.generateBirthChart(positions, ascendant);
 
@@ -666,6 +669,9 @@ app.post('/api/places/search', async (req, res) => {
 
                                 console.log('Astrology Data Timezone:', timezone);
                                 console.log('Astrology Data Timezone:', timeZone1);
+
+                                console.log('Astrology Data Timezone1:',tzUtil.lookupTimezoneByCoordinates(lat, lng,dateForTimezone));
+
 
                                 // Parse address components with more detail
                                 const addressComponents = place.address_components || [];

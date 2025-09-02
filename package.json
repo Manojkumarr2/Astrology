@@ -25,6 +25,7 @@
     "node-cache": "^5.1.2",
     "node-geocoder": "^4.4.1",
     "suncalc": "^1.9.0",
+    "timezones.json": "^1.7.2",
     "tz-lookup": "^6.1.25"
   },
   "devDependencies": {
