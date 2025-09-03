@@ -1,13 +1,12 @@
 {
   "name": "vedic-astrology-api",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "Node.js API for Vedic astrology calculations including Rasi, Nakshatra, Lagna and Birth Chart",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "jest",
-    "test-api": "node test-api.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js",   
+    "build": "npm run lint && npm test"
   },
   "dependencies": {
     "astronomy-engine": "^2.1.19",
@@ -29,6 +28,9 @@
     "tz-lookup": "^6.1.25"
   },
   "devDependencies": {
+    "@eslint/js": "^9.34.0",
+    "eslint": "^9.34.0",
+    "globals": "^16.3.0",
     "jest": "^29.7.0",
     "nodemon": "^3.0.1",
     "supertest": "^6.3.3"
