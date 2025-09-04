@@ -1,6 +1,6 @@
 {
   "name": "vedic-astrology-api",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Node.js API for Vedic astrology calculations including Rasi, Nakshatra, Lagna and Birth Chart",
   "main": "index.js",
   "scripts": {
