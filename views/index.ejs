@@ -1950,6 +1950,10 @@
                                     <span class="info-label">Coordinates:</span>
                                     <span class="info-value" id="person2-coordinates-display">-</span>
                                 </div>
+                                    <div class="info-row">
+                                    <span class="info-label">Degrees:</span>
+                                    <span class="info-value" id="person2-degrees-display">-</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2597,6 +2601,7 @@
             return {
                 latitude: locationData.latitude,
                 longitude: locationData.longitude,
+                degrees: locationData.coordinates.degrees || 0,
                 timezone: locationData.timezone,
                 name: locationData.name
             };
