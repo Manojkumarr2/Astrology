@@ -1412,7 +1412,8 @@
                 flex-direction: column;
             }
 
-            .btn-primary, .btn-clear {
+            .btn-primary,
+            .btn-clear {
                 min-width: 200px;
             }
         }
@@ -1452,9 +1453,9 @@
         }
 
         /* Custom Scrollbar for Planet Lists */
-     
 
-    
+
+
 
         /* .planet-list::-webkit-scrollbar-thumb {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1733,7 +1734,7 @@
             </div>
             <div class="nav-pill" data-section="behavior">
                 <i class="fas fa-brain"></i> Behavior
-                            </div>
+            </div>
         </div>
 
         <!-- Services Grid -->
@@ -1818,6 +1819,10 @@
                                 <span class="info-label">Coordinates:</span>
                                 <span class="info-value" id="birth-coordinates-display">-</span>
                             </div>
+                            <div class="info-row">
+                                <span class="info-label">Coordinates in degrees:</span>
+                                <span class="info-value" id="birth-coordinates-degrees-display">-</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1900,6 +1905,10 @@
                                     <span class="info-label">Coordinates:</span>
                                     <span class="info-value" id="person1-coordinates-display">-</span>
                                 </div>
+                                <div class="info-row">
+                                    <span class="info-label">Coordinates in degrees:</span>
+                                    <span class="info-value" id="person1-coordinates-degrees-display">-</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1950,9 +1959,9 @@
                                     <span class="info-label">Coordinates:</span>
                                     <span class="info-value" id="person2-coordinates-display">-</span>
                                 </div>
-                                    <div class="info-row">
-                                    <span class="info-label">Degrees:</span>
-                                    <span class="info-value" id="person2-degrees-display">-</span>
+                                <div class="info-row">
+                                    <span class="info-label">Coordinates in degrees:</span>
+                                    <span class="info-value" id="person2-coordinates-degrees-display">-</span>
                                 </div>
                             </div>
                         </div>
@@ -2026,6 +2035,10 @@
                             <div class="info-row">
                                 <span class="info-label">Coordinates:</span>
                                 <span class="info-value" id="behavior-coordinates-display">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Coordinates in degrees:</span>
+                                <span class="info-value" id="behavior-coordinates-degrees-display">-</span>
                             </div>
                         </div>
                     </div>
@@ -2280,6 +2293,8 @@
                      data-name="${location.name}"
                      data-lat="${location.latitude}"
                      data-lng="${location.longitude}"
+                     data-coordinatesFormattedDecimal="${location.coordinatesFormattedDecimal}"
+                     data-coordinatesFormattedDMS="${location.coordinatesFormattedDMS}"
                      data-timezone="${location.timezone || 0}">
                     <div class="suggestion-name">${location.name}</div>
                     <div class="suggestion-details">
@@ -2333,8 +2348,12 @@
                 const name = suggestionElement.dataset.name;
                 const lat = parseFloat(suggestionElement.dataset.lat);
                 const lng = parseFloat(suggestionElement.dataset.lng);
-
+                const coordinatesFormattedDecimal = suggestionElement.dataset.coordinatesformatteddecimal;
+                const coordinatesFormattedDMS = suggestionElement.dataset.coordinatesformatteddms;
                 console.log("suggestionElement", suggestionElement.dataset)
+                console.log("suggestionElement", coordinatesFormattedDecimal)
+                console.log("suggestionElement", coordinatesFormattedDMS)
+
                 const timezone = suggestionElement.dataset.timezone;
                 const isManual = suggestionElement.dataset.manual === 'true';
 
@@ -2343,6 +2362,8 @@
                     name: name,
                     latitude: lat,
                     longitude: lng,
+                    coordinatesFormattedDecimal: coordinatesFormattedDecimal,
+                    coordinatesFormattedDMS: coordinatesFormattedDMS,
                     timezone: timezone,
                     isManual: isManual
                 };
@@ -2390,11 +2411,14 @@
                     const locationDisplay = document.getElementById(`${prefix}-location-display`);
                     const timezoneDisplay = document.getElementById(`${prefix}-timezone-display`);
                     const coordinatesDisplay = document.getElementById(`${prefix}-coordinates-display`);
+                    const coordinatesDegreesDisplay = document.getElementById(`${prefix}-coordinates-degrees-display`);
 
                     if (locationDisplay) locationDisplay.textContent = this.locationData.name;
                     if (timezoneDisplay) timezoneDisplay.textContent = `UTC ${this.locationData.timezone >= 0 ? '+' : ''}${this.locationData.timezone}`;
                     if (coordinatesDisplay) coordinatesDisplay.textContent = `${this.locationData.latitude.toFixed(4)}, ${this.locationData.longitude.toFixed(4)}`;
+                    if (coordinatesDegreesDisplay) coordinatesDegreesDisplay.textContent = this.locationData.coordinatesFormattedDecimal || '-';
 
+                    // Set hidden fields for form submission
                     infoContainer.classList.add('show');
                 }
             }
@@ -2601,7 +2625,6 @@
             return {
                 latitude: locationData.latitude,
                 longitude: locationData.longitude,
-                degrees: locationData.coordinates.degrees || 0,
                 timezone: locationData.timezone,
                 name: locationData.name
             };
@@ -3155,7 +3178,7 @@
                         if (houseIndex >= 0 && houseIndex < 12) {
                             houses[houseIndex] = {
                                 planets: houseData.planets || [],
-                                                                sign: houseData.sign || '',
+                                sign: houseData.sign || '',
                                 signNumber: houseData.signNumber || null
                             };
 
@@ -3495,7 +3518,7 @@
 
             const formData = new FormData(form);
             const data = {};
-            
+
             for (let [key, value] of formData.entries()) {
                 if (value.trim() !== '') {
                     data[key] = value;
@@ -3515,7 +3538,7 @@
             try {
                 const data = JSON.parse(savedData);
                 const form = document.getElementById(`${formType}-form`);
-                
+
                 Object.entries(data).forEach(([key, value]) => {
                     const input = form.querySelector(`[name="${key}"]`);
                     if (input && input.type !== 'hidden') {
@@ -3554,10 +3577,10 @@
         }
 
         // Add double-click to clear functionality
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.btn-clear').forEach(btn => {
                 let clickCount = 0;
-                btn.addEventListener('click', function(e) {
+                btn.addEventListener('click', function (e) {
                     clickCount++;
                     if (clickCount === 1) {
                         setTimeout(() => {
@@ -3635,10 +3658,10 @@
         // Enhanced form submission with validation
         function enhancedFormSubmit(event, submitHandler) {
             event.preventDefault();
-            
+
             const form = event.target;
             const formType = form.id.replace('-form', '');
-            
+
             // Validate form
             const validationErrors = validateForm(formType);
             if (validationErrors.length > 0) {
@@ -3654,7 +3677,7 @@
         }
 
         // Override original form handlers with enhanced versions
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Replace form event listeners with enhanced versions
             const birthChartForm = document.getElementById('birth-chart-form');
             const compatibilityForm = document.getElementById('compatibility-form');
@@ -3772,19 +3795,19 @@
         document.head.appendChild(validationStyle);
 
         // Global error handler for uncaught errors
-        window.addEventListener('error', function(event) {
+        window.addEventListener('error', function (event) {
             console.error('Global error:', event.error);
             showNotification('An unexpected error occurred. Please try again.', 'error');
         });
 
         // Global handler for unhandled promise rejections
-        window.addEventListener('unhandledrejection', function(event) {
+        window.addEventListener('unhandledrejection', function (event) {
             console.error('Unhandled promise rejection:', event.reason);
             showNotification('A network or processing error occurred. Please check your connection and try again.', 'error');
         });
 
         // Clear all forms function (accessible globally)
-        window.clearAllForms = function() {
+        window.clearAllForms = function () {
             if (confirm('Are you sure you want to clear ALL forms? This will remove all entered data.')) {
                 ['birth-chart', 'compatibility', 'behavior'].forEach(formType => {
                     clearForm(formType);
@@ -3795,13 +3818,13 @@
         };
 
         // Export form data function
-        window.exportFormData = function(formType) {
+        window.exportFormData = function (formType) {
             const form = document.getElementById(`${formType}-form`);
             if (!form) return;
 
             const formData = new FormData(form);
             const data = {};
-            
+
             for (let [key, value] of formData.entries()) {
                 if (value.trim() !== '' && !key.includes('year') && !key.includes('month') && !key.includes('day') && !key.includes('hour') && !key.includes('minute') && !key.includes('timezone') && !key.includes('latitude') && !key.includes('longitude')) {
                     data[key] = value;
@@ -3834,19 +3857,19 @@
         };
 
         // Import form data function
-        window.importFormData = function(formType) {
+        window.importFormData = function (formType) {
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.json';
-            input.onchange = function(event) {
+            input.onchange = function (event) {
                 const file = event.target.files[0];
                 if (!file) return;
 
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     try {
                         const importData = JSON.parse(e.target.result);
-                        
+
                         if (importData.formType !== formType) {
                             showNotification('Invalid file: Form type mismatch!', 'error');
                             return;
